@@ -1,0 +1,7 @@
+package: github.com/jjdekker/ponder
+license: Apache License 2.0
+owners:
+- name: Jip J. Dekker
+  email: jip@dekker.li
+  homepage: https://jip.dekker.li/
+import: []
