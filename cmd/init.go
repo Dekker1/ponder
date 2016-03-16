@@ -15,8 +15,10 @@
 package cmd
 
 import (
-	"fmt"
+	"os"
 
+	log "github.com/Sirupsen/logrus"
+	"github.com/jjdekker/ponder/helpers"
 	"github.com/spf13/cobra"
 )
 
@@ -31,9 +33,38 @@ var initCmd = &cobra.Command{
   * If no name is provided, the current directory will be assumed;
 Init will not use an existing directory with contents.`,
 	Run: func(cmd *cobra.Command, args []string) {
-		// TODO: Work your own magic here
-		fmt.Println("init called")
+		var path string
+		var err error
+		switch len(args) {
+		case 0:
+			path, err = helpers.CleanPath("")
+		case 1:
+			path, err = helpers.CleanPath(args[0])
+		default:
+			log.Fatal("init command does not support more than 1 parameter")
+		}
+		if err != nil {
+			log.WithFields(log.Fields{"error": err}).Fatal("Given path is invalid")
+		}
+
+		initializePath(path)
 	},
+}
+
+func initializePath(path string) {
+	b, err := helpers.Exists(path)
+	if err != nil {
+		log.WithFields(log.Fields{"error": err}).Fatal("Error while checking file")
+	}
+	if !b {
+		err := os.MkdirAll(path, os.ModePerm)
+		if err != nil {
+			log.WithFields(log.Fields{"error": err}).Fatal("Could not create directory")
+		}
+	}
+
+	// createSettings()
+	// createGitIgnore()
 }
 
 func init() {
