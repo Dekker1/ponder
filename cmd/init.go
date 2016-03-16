@@ -43,9 +43,7 @@ Init will not use an existing directory with contents.`,
 		default:
 			log.Fatal("init command does not support more than 1 parameter")
 		}
-		if err != nil {
-			log.WithFields(log.Fields{"error": err}).Fatal("Given path is invalid")
-		}
+		helpers.Check(err, "Given path is invalid")
 
 		initializePath(path)
 	},
@@ -53,14 +51,11 @@ Init will not use an existing directory with contents.`,
 
 func initializePath(path string) {
 	b, err := helpers.Exists(path)
-	if err != nil {
-		log.WithFields(log.Fields{"error": err}).Fatal("Error while checking file")
-	}
+	helpers.Check(err, "Error while checking file")
+
 	if !b {
 		err := os.MkdirAll(path, os.ModePerm)
-		if err != nil {
-			log.WithFields(log.Fields{"error": err}).Fatal("Could not create directory")
-		}
+		helpers.Check(err, "Could not create directory")
 	}
 
 	// createSettings()
