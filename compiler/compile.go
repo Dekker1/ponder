@@ -16,6 +16,8 @@ package compiler
 
 import "github.com/jjdekker/ponder/settings"
 
-func compileDir(path string, opts *settings.Settings) {
+// CompileDir compiles all lilypond files and makes all
+// sheet music available in the OutputDir
+func CompileDir(path string, opts *settings.Settings) {
 
 }
