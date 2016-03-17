@@ -15,6 +15,7 @@
 package helpers
 
 import (
+	"errors"
 	"os"
 	"path/filepath"
 
@@ -51,4 +52,18 @@ func Exists(path string) bool {
 			Panic("Unable to check path")
 	}
 	return false
+}
+
+// FindFileDir returns the path of the
+func FindFileDir(file string) (string, error) {
+	wd, err := os.Getwd()
+	if err != nil {
+		return "", nil
+	}
+	for path := wd; path != "."; path = filepath.Dir(path) {
+		if Exists(filepath.Join(path, file)) {
+			return path, nil
+		}
+	}
+	return "", errors.New("directory not found")
 }
