@@ -35,10 +35,10 @@ func FromFile(path string) (*Settings, error) {
 		return nil, err
 	}
 
-	var s *Settings
-	err = json.Unmarshal(data, s)
+	var s Settings
+	err = json.Unmarshal(data, &s)
 	if err != nil {
 		return nil, err
 	}
-	return s, nil
+	return &s, nil
 }
