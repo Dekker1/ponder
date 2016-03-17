@@ -20,4 +20,5 @@ type Settings struct {
 	Name             string   // Name of the Ponder library
 	IgnoreDirs       []string // Directories to be ignored on search
 	LilypondIncludes []string // Directories to be included when running the lilypond compiler
+	OutputDir        string   // Directory in which all complete file are stored
 }
