@@ -23,13 +23,11 @@ import (
 // compileCmd represents the compile command
 var compileCmd = &cobra.Command{
 	Use:   "compile",
-	Short: "A brief description of your command",
-	Long: `A longer description that spans multiple lines and likely contains examples
-and usage of using your command. For example:
-
-Cobra is a CLI library for Go that empowers applications.
-This application is a tool to generate the needed files
-to quickly create a Cobra application.`,
+	Short: "Compiles all lilypond files in the library",
+	Long: `Compile (ponder compile) will walk through and compile all
+lilypond files in accordance to ponder settings file.
+Files that have already been compiled will be skipped,
+unless the lilypond file has been edited.`,
 	Run: func(cmd *cobra.Command, args []string) {
 		// TODO: Work your own magic here
 		fmt.Println("compile called")
