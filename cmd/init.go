@@ -64,11 +64,7 @@ Init will not use an existing directory with contents.`,
 }
 
 func initializePath(path string) {
-	b, err := helpers.Exists(path)
-	if err != nil {
-		log.WithFields(log.Fields{"error": err, "path": path}).
-			Fatal("Unable to check path")
-	}
+	b := helpers.Exists(path)
 
 	if !b {
 		err := os.MkdirAll(path, os.ModePerm)
@@ -80,14 +76,10 @@ func initializePath(path string) {
 }
 
 func createFile(path string, content []byte) {
-	b, err := helpers.Exists(path)
-	if err != nil {
-		log.WithFields(log.Fields{"error": err, "path": path}).
-			Fatal("Unable to check path")
-	}
+	b := helpers.Exists(path)
 
 	if !b {
-		err = ioutil.WriteFile(path, content, 0644)
+		err := ioutil.WriteFile(path, content, 0644)
 		if err != nil {
 			log.WithFields(log.Fields{"error": err, "path": path}).
 				Fatal("Unable to create settings file")

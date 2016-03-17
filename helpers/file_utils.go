@@ -17,6 +17,8 @@ package helpers
 import (
 	"os"
 	"path/filepath"
+
+	log "github.com/Sirupsen/logrus"
 )
 
 // CleanPath returns a cleaned path from a given string relative
@@ -39,13 +41,14 @@ func CleanPath(path string) (string, error) {
 }
 
 // Exists checks if a file or directory exists.
-func Exists(path string) (bool, error) {
+func Exists(path string) bool {
 	_, err := os.Stat(path)
 	if err == nil {
-		return true, nil
+		return true
 	}
-	if os.IsNotExist(err) {
-		return false, nil
+	if !os.IsNotExist(err) {
+		log.WithFields(log.Fields{"error": err, "path": path}).
+			Panic("Unable to check path")
 	}
-	return false, err
+	return false
 }
