@@ -32,6 +32,8 @@ var (
   "LilypondIncludes": [],
   "OutputDir": "out"
 }`)
+	gitIgnoreTemplate = []byte(`# Output Folder
+out/`)
 )
 
 // initCmd represents the init command
@@ -73,12 +75,11 @@ func initializePath(path string) {
 		helpers.Check(err, "Could not create directory")
 	}
 
-	createSettings(path)
-	// createGitIgnore()
+	createFile(filepath.Join(path, settingsFile), settingsTemplate)
+	createFile(filepath.Join(path, ".gitignore"), gitIgnoreTemplate)
 }
 
-func createSettings(path string) {
-	path = filepath.Join(path, settingsFile)
+func createFile(path string, content []byte) {
 	b, err := helpers.Exists(path)
 	if err != nil {
 		log.WithFields(log.Fields{"error": err, "path": path}).
@@ -86,7 +87,7 @@ func createSettings(path string) {
 	}
 
 	if !b {
-		err = ioutil.WriteFile(path, settingsTemplate, 0644)
+		err = ioutil.WriteFile(path, content, 0644)
 		if err != nil {
 			log.WithFields(log.Fields{"error": err, "path": path}).
 				Fatal("Unable to create settings file")
