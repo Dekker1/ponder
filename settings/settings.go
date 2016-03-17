@@ -14,6 +14,11 @@
 
 package settings
 
+import (
+	"encoding/json"
+	"io/ioutil"
+)
+
 // Settings provides a structure to interact with the settings
 // of a Ponder library
 type Settings struct {
@@ -21,4 +26,19 @@ type Settings struct {
 	IgnoreDirs       []string // Directories to be ignored on search
 	LilypondIncludes []string // Directories to be included when running the lilypond compiler
 	OutputDir        string   // Directory in which all complete file are stored
+}
+
+// FromFile reads a settings file in json format and returns the Settings struct
+func FromFile(path string) (*Settings, error) {
+	data, err := ioutil.ReadFile(path)
+	if err != nil {
+		return nil, err
+	}
+
+	var s *Settings
+	err = json.Unmarshal(data, s)
+	if err != nil {
+		return nil, err
+	}
+	return s, nil
 }
