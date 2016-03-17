@@ -65,5 +65,8 @@ func FindFileDir(file string) (string, error) {
 			return path, nil
 		}
 	}
-	return "", errors.New("directory not found")
+	return "", &os.PathError{
+		Path: wd,
+		Err:  errors.New("directory containing " + file + " not found"),
+	}
 }
