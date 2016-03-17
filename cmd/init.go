@@ -15,11 +15,23 @@
 package cmd
 
 import (
+	"io/ioutil"
 	"os"
+	"path/filepath"
 
 	log "github.com/Sirupsen/logrus"
 	"github.com/jjdekker/ponder/helpers"
 	"github.com/spf13/cobra"
+)
+
+var (
+	settingsFile     = "ponder.json"
+	settingsTemplate = []byte(`{
+  "Name": "",
+  "IgnoreDirs": [".git"],
+  "LilypondIncludes": [],
+  "OutputDir": "out"
+}`)
 )
 
 // initCmd represents the init command
@@ -51,15 +63,35 @@ Init will not use an existing directory with contents.`,
 
 func initializePath(path string) {
 	b, err := helpers.Exists(path)
-	helpers.Check(err, "Error while checking file")
+	if err != nil {
+		log.WithFields(log.Fields{"error": err, "path": path}).
+			Fatal("Unable to check path")
+	}
 
 	if !b {
 		err := os.MkdirAll(path, os.ModePerm)
 		helpers.Check(err, "Could not create directory")
 	}
 
-	// createSettings()
+	createSettings(path)
 	// createGitIgnore()
+}
+
+func createSettings(path string) {
+	path = filepath.Join(path, settingsFile)
+	b, err := helpers.Exists(path)
+	if err != nil {
+		log.WithFields(log.Fields{"error": err, "path": path}).
+			Fatal("Unable to check path")
+	}
+
+	if !b {
+		err = ioutil.WriteFile(path, settingsTemplate, 0644)
+		if err != nil {
+			log.WithFields(log.Fields{"error": err, "path": path}).
+				Fatal("Unable to create settings file")
+		}
+	}
 }
 
 func init() {
