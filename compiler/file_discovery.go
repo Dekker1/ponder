@@ -13,3 +13,50 @@
 // limitations under the License.
 
 package compiler
+
+import (
+	"os"
+	"path/filepath"
+
+	log "github.com/Sirupsen/logrus"
+	"github.com/jjdekker/ponder/helpers"
+	"github.com/jjdekker/ponder/settings"
+)
+
+// compilePath calls the given function on all files that aren't in any
+// of the ignored directories
+func compilePath(root string, opts *settings.Settings,
+	f func(string, os.FileInfo) error) filepath.WalkFunc {
+	return func(path string, info os.FileInfo, err error) error {
+		// Handle walking error
+		if err != nil {
+			log.withFields(log.Fields{
+				"error": err,
+				"path":  path,
+			}).Warning("error occurred transversing project path")
+			return nil
+		}
+
+		if info.IsDir() {
+			// Skip directories that are ignored
+			relPath, err = filepath.Rel(root, path)
+			helpers.Check(err, "Unable to create relative Path")
+			for dir := range append(append(opts.IgnoreDirs, opts.LilypondIncludes), []string{opts.OutputDir}) {
+				if relPath == dir || (filepath.IsAbs(dir) && path == dir) {
+					log.WithFields(log.Fields{"path": path}).Info("Ignoring directory")
+					return filepath.SkipDir
+				}
+			}
+		} else {
+			// Call function on non-directory
+			err = f(path, info)
+			if err != nil {
+				log.WithFields(log.Fields{
+					"error": err,
+					"path":  path,
+				}).Error("error occured processing files")
+			}
+		}
+		return nil
+	}
+}
