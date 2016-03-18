@@ -14,9 +14,29 @@
 
 package settings
 
+import (
+	"encoding/json"
+	"io/ioutil"
+)
+
 // Score represents the settings for a specific score file
 type Score struct {
 	Name       string   // The name of the score in the songbook
 	Categories []string // Categories to which the scores belong
 	Path       string   // The path to the scores (uncompiled) file
+}
+
+// FromJSON reads the settings of a score from a JSON file
+func FromJSON(path string) (*Score, error) {
+	data, err := ioutil.ReadFile(path)
+	if err != nil {
+		return nil, err
+	}
+
+	var s Score
+	err = json.Unmarshal(data, &s)
+	if err != nil {
+		return nil, err
+	}
+	return &s, nil
 }
