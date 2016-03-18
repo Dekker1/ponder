@@ -12,13 +12,11 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-package main
+package settings
 
-import "github.com/jjdekker/ponder/cmd"
-
-func main() {
-	cmd.Execute()
+// Score represents the settings for a specific score file
+type Score struct {
+	Name       string   // The name of the score in the songbook
+	Categories []string // Categories to which the scores belong
+	Path       string   // The path to the scores (uncompiled) file
 }
-
-// TODO: Make a command to check that settings are legal:
-// TODO: - Check paths don't require WD knowledge
