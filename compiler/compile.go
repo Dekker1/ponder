@@ -25,7 +25,9 @@ import (
 // CompileDir compiles all lilypond files and makes all
 // sheet music available in the OutputDir
 func CompileDir(path string, opts *settings.Settings) {
-
+	// Find all scores
+	scores, collector := generateScores()
+	filepath.Walk(path, compilePath(path, opts, collector))
 }
 
 func generateScores() ([]*settings.Score, func(string, os.FileInfo) error) {
