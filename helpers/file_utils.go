@@ -72,8 +72,8 @@ func FindFileDir(file string) (string, error) {
 }
 
 // AbsolutePath returns an the path if it is absolute or
-// otherwise filepath.Join(lib, path)
-func AbsolutePath(path, lib string) string {
+// otherwise filepath.Join(root, path)
+func AbsolutePath(path, root string) string {
 	if filepath.IsAbs(path) {
 		return path
 	}
