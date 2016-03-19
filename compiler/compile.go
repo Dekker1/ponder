@@ -15,7 +15,6 @@
 package compiler
 
 import (
-	"fmt"
 	"os"
 	"path/filepath"
 
@@ -30,8 +29,16 @@ func CompileDir(path string, opts *settings.Settings) {
 	scores, collector := generateScores()
 	filepath.Walk(path, compilePath(path, opts, collector))
 
+	PrepareLilypond(opts)
 	for _, score := range *scores {
-		fmt.Println(score)
+		msg, err := Lilypond(score.Path)
+		if err != nil {
+			log.WithFields(log.Fields{
+				"message": msg,
+				"error":   err,
+				"score":   score,
+			}).Warning("score failed to compile")
+		}
 	}
 }
 
