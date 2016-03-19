@@ -40,6 +40,7 @@ func FromFile(path string) (*Settings, error) {
 	if err != nil {
 		return nil, err
 	}
+	s.AbsolutePaths(filepath.Dir(path))
 	return &s, nil
 }
 
