@@ -14,15 +14,20 @@
 
 package compiler
 
-import "github.com/jjdekker/ponder/settings"
+import (
+	"os/exec"
+
+	"github.com/jjdekker/ponder/settings"
+)
 
 var (
 	lilypondCmd  = "lilypond"
 	lilypondArgs []string
 )
 
-//
-func prepareLilypondArgs(opts *settings.Settings) {
+// PrepareLilypond sets all arguments and options for the Lilypond
+// compilation function using the given settings
+func PrepareLilypond(opts *settings.Settings) {
 	// Adds all includes to the lilypond arguments
 	for dir := range opts.LilypondIncludes {
 		lilypondArgs = append(lilypondArgs, "--include=\""+dir+"\"")
@@ -33,7 +38,9 @@ func prepareLilypondArgs(opts *settings.Settings) {
 	lilypondArgs = append(lilypondArgs, "--output=\""+opts.OutputDir+"\"")
 }
 
-// Lilypond runs the lilypond compiler
-func Lilypond(path string) error {
-	return nil
+// Lilypond runs the lilypond compiler on the given path
+// using the arguments prepared by the PrepareLilypond function
+func Lilypond(path string) (string, error) {
+	cmd := exec.Command(lilypondCmd, append(lilypondArgs, path)...)
+	return cmd.CombinedOutput()
 }
