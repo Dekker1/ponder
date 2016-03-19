@@ -17,7 +17,13 @@ package cmd
 import (
 	"os"
 
+	log "github.com/Sirupsen/logrus"
 	"github.com/spf13/cobra"
+)
+
+var (
+	veryVerbose bool
+	verbose     bool
 )
 
 // This represents the base command when called without any subcommands
@@ -42,12 +48,18 @@ func Execute() {
 }
 
 func init() {
-	// Here you will define your flags and configuration settings.
-	// Cobra supports Persistent Flags, which, if defined here,
-	// will be global for your application.
+	RootCmd.PersistentFlags().BoolVarP(&verbose, "verbose", "v", false, "Verbose output of application events")
+	RootCmd.PersistentFlags().BoolVar(&veryVerbose, "vv", false, "Debug output of application events")
 
-	// RootCmd.PersistentFlags().StringVar(&cfgFile, "config", "", "config file (default is $HOME/.ponder.yaml)")
-	// Cobra also supports local flags, which will only run
-	// when this action is called directly.
-	// RootCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
+	setLogLevel()
+}
+
+func setLogLevel() {
+	if veryVerbose {
+		log.SetLevel(log.DebugLevel)
+	} else if verbose {
+		log.SetLevel(log.InfoLevel)
+	} else {
+		log.SetLevel(log.WarnLevel)
+	}
 }
