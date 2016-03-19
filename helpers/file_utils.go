@@ -70,3 +70,12 @@ func FindFileDir(file string) (string, error) {
 		Err:  errors.New("directory containing " + file + " not found"),
 	}
 }
+
+// AbsolutePath returns an the path if it is absolute or
+// otherwise filepath.Join(lib, path)
+func AbsolutePath(path, lib string) string {
+	if filepath.IsAbs(path) {
+		return path
+	}
+	return filepath.Join(lib, path)
+}
