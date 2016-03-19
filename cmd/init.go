@@ -64,9 +64,7 @@ Init will not use an existing directory with contents.`,
 }
 
 func initializePath(path string) {
-	b := helpers.Exists(path)
-
-	if !b {
+	if !helpers.Exists(path) {
 		err := os.MkdirAll(path, os.ModePerm)
 		helpers.Check(err, "Could not create directory")
 	}
