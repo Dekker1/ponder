@@ -30,12 +30,14 @@ func CompileDir(path string, opts *settings.Settings) {
 	scores, collector := generateScores()
 	filepath.Walk(path, compilePath(path, opts, collector))
 
-	fmt.Println(scores)
+	for _, score := range *scores {
+		fmt.Println(score)
+	}
 }
 
-func generateScores() ([]*settings.Score, func(string, os.FileInfo) error) {
+func generateScores() (*[]*settings.Score, func(string, os.FileInfo) error) {
 	var scores []*settings.Score
-	return scores, func(path string, file os.FileInfo) error {
+	return &scores, func(path string, file os.FileInfo) error {
 		switch filepath.Ext(path) {
 		case ".ly":
 			log.WithFields(log.Fields{"path": path}).Info("adding lilypond file")
