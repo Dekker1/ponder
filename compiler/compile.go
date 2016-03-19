@@ -14,10 +14,43 @@
 
 package compiler
 
-import "github.com/jjdekker/ponder/settings"
+import (
+	"os"
+	"path/filepath"
+
+	log "github.com/Sirupsen/logrus"
+	"github.com/jjdekker/ponder/settings"
+)
 
 // CompileDir compiles all lilypond files and makes all
 // sheet music available in the OutputDir
 func CompileDir(path string, opts *settings.Settings) {
 
+}
+
+func generateScores() ([]*settings.Score, func(string, os.FileInfo) error) {
+	scores := make([]*settings.Score)
+	return scores, func(path string, file os.FileInfo) error {
+		switch filepath.Ext(path) {
+		case ".ly":
+			log.WithFields(log.Fields{"path": path}).Info("adding lilypond file")
+			append(scores, &settings.Score{Path: path})
+
+		case ".json":
+			if filepath.Base(path) != "ponder.json" {
+				log.WithFields(log.Fields{"path": path}).Info("adding json file")
+				if score, err := fromJSON(path); err != nil {
+					log.WithFields(log.Fields{
+						"error": err,
+						"path":  path,
+					}).Warning("unable to parse score settings, skipping...")
+				} else {
+					append(scores, score)
+				}
+			}
+
+		default:
+			log.WithFields(log.Fields{"path": path}).Debug("ignoring file")
+		}
+	}
 }
