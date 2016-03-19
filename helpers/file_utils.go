@@ -77,5 +77,5 @@ func AbsolutePath(path, root string) string {
 	if filepath.IsAbs(path) {
 		return path
 	}
-	return filepath.Join(lib, path)
+	return filepath.Join(root, path)
 }
