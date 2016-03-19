@@ -15,6 +15,7 @@
 package compiler
 
 import (
+	"fmt"
 	"os"
 	"path/filepath"
 
@@ -28,31 +29,34 @@ func CompileDir(path string, opts *settings.Settings) {
 	// Find all scores
 	scores, collector := generateScores()
 	filepath.Walk(path, compilePath(path, opts, collector))
+
+	fmt.Println(scores)
 }
 
 func generateScores() ([]*settings.Score, func(string, os.FileInfo) error) {
-	scores := make([]*settings.Score)
+	var scores []*settings.Score
 	return scores, func(path string, file os.FileInfo) error {
 		switch filepath.Ext(path) {
 		case ".ly":
 			log.WithFields(log.Fields{"path": path}).Info("adding lilypond file")
-			append(scores, &settings.Score{Path: path})
+			scores = append(scores, &settings.Score{Path: path})
 
 		case ".json":
 			if filepath.Base(path) != "ponder.json" {
 				log.WithFields(log.Fields{"path": path}).Info("adding json file")
-				if score, err := fromJSON(path); err != nil {
+				if score, err := settings.FromJSON(path); err != nil {
 					log.WithFields(log.Fields{
 						"error": err,
 						"path":  path,
 					}).Warning("unable to parse score settings, skipping...")
 				} else {
-					append(scores, score)
+					scores = append(scores, score)
 				}
 			}
 
 		default:
 			log.WithFields(log.Fields{"path": path}).Debug("ignoring file")
 		}
+		return nil
 	}
 }

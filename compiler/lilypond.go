@@ -31,7 +31,7 @@ var (
 // compilation function using the given settings
 func PrepareLilypond(opts *settings.Settings) {
 	// Adds all includes to the lilypond arguments
-	for dir := range opts.LilypondIncludes {
+	for _, dir := range opts.LilypondIncludes {
 		lilypondArgs = append(lilypondArgs, "--include=\""+dir+"\"")
 	}
 	lilypondArgs = append(lilypondArgs, "--loglevel=ERROR")
@@ -40,7 +40,7 @@ func PrepareLilypond(opts *settings.Settings) {
 	// TODO: Make this an absolute path.
 	lilypondArgs = append(lilypondArgs, "--output=\""+opts.OutputDir+"\"")
 	if !helpers.Exists(opts.OutputDir) {
-		err := os.MkdirAll(path, os.ModePerm)
+		err := os.MkdirAll(opts.OutputDir, os.ModePerm)
 		helpers.Check(err, "Could not create output directory")
 	}
 }
@@ -49,5 +49,6 @@ func PrepareLilypond(opts *settings.Settings) {
 // using the arguments prepared by the PrepareLilypond function
 func Lilypond(path string) (string, error) {
 	cmd := exec.Command(lilypondCmd, append(lilypondArgs, path)...)
-	return cmd.CombinedOutput()
+	out, err := cmd.CombinedOutput()
+	return string(out), err
 }

@@ -27,11 +27,11 @@ import (
 // of the ignored directories
 func compilePath(root string, opts *settings.Settings,
 	f func(string, os.FileInfo) error) filepath.WalkFunc {
-	return func(path string, info os.FileInfo, err error) error {
+	return func(path string, info os.FileInfo, walkError error) error {
 		// Handle walking error
-		if err != nil {
-			log.withFields(log.Fields{
-				"error": err,
+		if walkError != nil {
+			log.WithFields(log.Fields{
+				"error": walkError,
 				"path":  path,
 			}).Warning("error occurred transversing project path")
 			return nil
@@ -39,9 +39,9 @@ func compilePath(root string, opts *settings.Settings,
 
 		if info.IsDir() {
 			// Skip directories that are ignored
-			relPath, err = filepath.Rel(root, path)
+			relPath, err := filepath.Rel(root, path)
 			helpers.Check(err, "Unable to create relative Path")
-			for dir := range append(append(opts.IgnoreDirs, opts.LilypondIncludes), []string{opts.OutputDir}) {
+			for _, dir := range append(append(opts.IgnoreDirs, opts.LilypondIncludes...), opts.OutputDir) {
 				if relPath == dir || (filepath.IsAbs(dir) && path == dir) {
 					log.WithFields(log.Fields{"path": path}).Info("Ignoring directory")
 					return filepath.SkipDir
@@ -49,7 +49,7 @@ func compilePath(root string, opts *settings.Settings,
 			}
 		} else {
 			// Call function on non-directory
-			err = f(path, info)
+			err := f(path, info)
 			if err != nil {
 				log.WithFields(log.Fields{
 					"error": err,
