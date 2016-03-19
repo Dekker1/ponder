@@ -15,7 +15,8 @@
 package cmd
 
 import (
-	"github.com/jjdekker/ponder/helpers"
+	"os"
+
 	"github.com/spf13/cobra"
 )
 
@@ -35,8 +36,9 @@ other PDF files to be part of your song book.`,
 // Execute adds all child commands to the root command sets flags appropriately.
 // This is called by main.main(). It only needs to happen once to the rootCmd.
 func Execute() {
-	err := RootCmd.Execute()
-	helpers.Check(err, "Command returned an error")
+	if err := RootCmd.Execute(); err != nil {
+		os.Exit(-1)
+	}
 }
 
 func init() {
