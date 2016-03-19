@@ -15,8 +15,10 @@
 package compiler
 
 import (
+	"os"
 	"os/exec"
 
+	"github.com/jjdekker/ponder/helpers"
 	"github.com/jjdekker/ponder/settings"
 )
 
@@ -34,8 +36,13 @@ func PrepareLilypond(opts *settings.Settings) {
 	}
 	lilypondArgs = append(lilypondArgs, "--loglevel=ERROR")
 	lilypondArgs = append(lilypondArgs, "--pdf")
+
 	// TODO: Make this an absolute path.
 	lilypondArgs = append(lilypondArgs, "--output=\""+opts.OutputDir+"\"")
+	if !helpers.Exists(opts.OutputDir) {
+		err := os.MkdirAll(path, os.ModePerm)
+		helpers.Check(err, "Could not create output directory")
+	}
 }
 
 // Lilypond runs the lilypond compiler on the given path
