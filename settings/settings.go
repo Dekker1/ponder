@@ -17,6 +17,9 @@ package settings
 import (
 	"encoding/json"
 	"io/ioutil"
+	"path/filepath"
+
+	"github.com/jjdekker/ponder/helpers"
 )
 
 // Settings provides a structure to interact with the settings
@@ -46,12 +49,12 @@ func FromFile(path string) (*Settings, error) {
 
 // AbsolutePaths makes all paths in settings absolute using the given
 // absolute root
-func (s *settings.Settings) AbsolutePaths(root string) {
+func (s *Settings) AbsolutePaths(root string) {
 	for i := range s.IgnoreDirs {
-		s.IgnoreDirs[i] := helpers.AbsolutePath(s.IgnoreDirs[i], root)
+		s.IgnoreDirs[i] = helpers.AbsolutePath(s.IgnoreDirs[i], root)
 	}
 	for i := range s.LilypondIncludes {
-		s.LilypondIncludes[i] := helpers.AbsolutePath(s.LilypondIncludes[i], root)
+		s.LilypondIncludes[i] = helpers.AbsolutePath(s.LilypondIncludes[i], root)
 	}
-	s.OutputDir := helpers.AbsolutePath(s.OutputDir, root)
+	s.OutputDir = helpers.AbsolutePath(s.OutputDir, root)
 }
