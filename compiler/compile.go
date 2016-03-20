@@ -52,7 +52,10 @@ func generateScores() func(string, os.FileInfo) error {
 		switch filepath.Ext(path) {
 		case ".ly":
 			log.WithFields(log.Fields{"path": path}).Info("adding lilypond file")
-			scores = append(scores, &settings.Score{Path: path})
+			scores = append(scores, &settings.Score{
+				Path:         path,
+				LastModified: file.LastModified,
+			})
 
 		case ".json":
 			if filepath.Base(path) != "ponder.json" {

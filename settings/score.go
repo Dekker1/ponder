@@ -18,6 +18,8 @@ import (
 	"encoding/json"
 	"io/ioutil"
 	"time"
+
+	"github.com/jjdekker/ponder/helpers"
 )
 
 // Score represents the settings for a specific score file
@@ -40,5 +42,7 @@ func FromJSON(path string) (*Score, error) {
 	if err != nil {
 		return nil, err
 	}
+	s.LastModified = helpers.LastModified(s.Path)
+
 	return &s, nil
 }

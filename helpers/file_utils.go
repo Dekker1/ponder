@@ -18,6 +18,7 @@ import (
 	"errors"
 	"os"
 	"path/filepath"
+	"time"
 
 	log "github.com/Sirupsen/logrus"
 )
@@ -52,6 +53,16 @@ func Exists(path string) bool {
 			Panic("Unable to check path")
 	}
 	return false
+}
+
+// LastModified returns the time the file on the path was last modified,
+// if file lookup fails the current time is returned.
+func LastModified(path string) time.Time {
+	stat, err := os.Stat(path)
+	if err == nil {
+		return stat.LastModified
+	}
+	return time.Now()
 }
 
 // FindFileDir returns the path of the
