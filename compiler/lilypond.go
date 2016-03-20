@@ -39,7 +39,6 @@ func PrepareLilypond(opts *settings.Settings) {
 	lilypondArgs = append(lilypondArgs, "--loglevel=ERROR")
 	lilypondArgs = append(lilypondArgs, "--pdf")
 
-	// TODO: Make this an absolute path.
 	lilypondArgs = append(lilypondArgs, "--output="+opts.OutputDir)
 	if !helpers.Exists(opts.OutputDir) {
 		log.WithFields(log.Fields{"path": opts.OutputDir}).Info("creating output directory")
