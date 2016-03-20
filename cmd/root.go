@@ -16,8 +16,11 @@ package cmd
 
 import (
 	"os"
+	"path/filepath"
 
 	log "github.com/Sirupsen/logrus"
+	"github.com/jjdekker/ponder/helpers"
+	"github.com/jjdekker/ponder/settings"
 	"github.com/spf13/cobra"
 )
 
@@ -62,4 +65,16 @@ func setLogLevel() {
 	} else {
 		log.SetLevel(log.WarnLevel)
 	}
+}
+
+// getSettings return the directory in which the settings file was
+// found and the parsed settings content
+func getSettings() (string, *settings.Settings) {
+	// Find and Unmarshal the settings file
+	path, err := helpers.FindFileDir(settingsFile)
+	helpers.Check(err, "unable to find library directory")
+	opts, err := settings.FromFile(filepath.Join(path, settingsFile))
+	helpers.Check(err, "unable to parse settings file")
+
+	return path, opts
 }

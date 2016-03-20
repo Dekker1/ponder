@@ -15,11 +15,7 @@
 package cmd
 
 import (
-	"path/filepath"
-
 	"github.com/jjdekker/ponder/compiler"
-	"github.com/jjdekker/ponder/helpers"
-	"github.com/jjdekker/ponder/settings"
 	"github.com/spf13/cobra"
 )
 
@@ -32,11 +28,7 @@ lilypond files in accordance to ponder settings file.
 Files that have already been compiled will be skipped,
 unless the lilypond file has been edited.`,
 	Run: func(cmd *cobra.Command, args []string) {
-		// Find and Unmarshal the settings file
-		path, err := helpers.FindFileDir(settingsFile)
-		helpers.Check(err, "unable to find library directory")
-		opts, err := settings.FromFile(filepath.Join(path, settingsFile))
-		helpers.Check(err, "unable to parse settings file")
+		path, opts := getSettings()
 
 		// Compile files
 		compiler.CompileDir(path, opts)
