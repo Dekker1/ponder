@@ -17,13 +17,15 @@ package settings
 import (
 	"encoding/json"
 	"io/ioutil"
+	"time"
 )
 
 // Score represents the settings for a specific score file
 type Score struct {
-	Name       string   // The name of the score in the songbook
-	Categories []string // Categories to which the scores belong
-	Path       string   // The path to the scores (uncompiled) file
+	Name         string    // The name of the score in the songbook
+	Categories   []string  // Categories to which the scores belong
+	Path         string    // The path to the scores (uncompiled) file
+	LastModified time.Time // Time when the score source was last modified (will be set internally)
 }
 
 // FromJSON reads the settings of a score from a JSON file
