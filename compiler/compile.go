@@ -54,7 +54,7 @@ func generateScores() func(string, os.FileInfo) error {
 			log.WithFields(log.Fields{"path": path}).Info("adding lilypond file")
 			scores = append(scores, &settings.Score{
 				Path:         path,
-				LastModified: file.LastModified,
+				LastModified: file.ModTime(),
 			})
 
 		case ".json":

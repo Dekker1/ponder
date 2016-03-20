@@ -60,7 +60,7 @@ func Exists(path string) bool {
 func LastModified(path string) time.Time {
 	stat, err := os.Stat(path)
 	if err == nil {
-		return stat.LastModified
+		return stat.ModTime()
 	}
 	return time.Now()
 }
