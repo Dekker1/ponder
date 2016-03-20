@@ -29,8 +29,6 @@ Files that have already been compiled will be skipped,
 unless the lilypond file has been edited.`,
 	Run: func(cmd *cobra.Command, args []string) {
 		path, opts := getSettings()
-
-		// Compile files
 		compiler.CompileDir(path, opts)
 	},
 }
