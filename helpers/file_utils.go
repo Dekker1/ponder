@@ -60,7 +60,7 @@ func FindFileDir(file string) (string, error) {
 	if err != nil {
 		return "", nil
 	}
-	for path := wd; path != "."; path = filepath.Dir(path) {
+	for path := wd; path != "/"; path = filepath.Dir(path) {
 		if Exists(filepath.Join(path, file)) {
 			return path, nil
 		}
