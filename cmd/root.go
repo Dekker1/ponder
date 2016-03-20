@@ -37,6 +37,9 @@ var RootCmd = &cobra.Command{
 The main purpose is to help in the compilation of your lilypond files
 into both single files and a fully functioning song book. It also accepts
 other PDF files to be part of your song book.`,
+	PersistentPreRun: func(cmd *cobra.Command, args []string) {
+		setLogLevel()
+	},
 	// Uncomment the following line if your bare application
 	// has an action associated with it:
 	//	Run: func(cmd *cobra.Command, args []string) { },
@@ -53,8 +56,6 @@ func Execute() {
 func init() {
 	RootCmd.PersistentFlags().BoolVarP(&verbose, "verbose", "v", false, "Verbose output of application events")
 	RootCmd.PersistentFlags().BoolVar(&veryVerbose, "vv", false, "Debug output of application events")
-
-	setLogLevel()
 }
 
 func setLogLevel() {
