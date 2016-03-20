@@ -19,6 +19,7 @@ import (
 	"path/filepath"
 
 	log "github.com/Sirupsen/logrus"
+	"github.com/jjdekker/ponder/helpers"
 	"github.com/jjdekker/ponder/settings"
 )
 
@@ -35,14 +36,18 @@ func CompileDir(path string, opts *settings.Settings) {
 
 	PrepareLilypond(opts)
 	for _, score := range scores {
-		// TODO: compile only if there are changes
-		msg, err := Lilypond(score.Path)
-		if err != nil {
-			log.WithFields(log.Fields{
-				"message": msg,
-				"error":   err,
-				"score":   score,
-			}).Warning("score failed to compile")
+		output := outputPath(score.Path, opts)
+
+		if !helpers.Exists(output) ||
+			score.LastModified.After(helpers.LastModified(output)) {
+			msg, err := Lilypond(score.Path)
+			if err != nil {
+				log.WithFields(log.Fields{
+					"message": msg,
+					"error":   err,
+					"score":   score,
+				}).Warning("score failed to compile")
+			}
 		}
 	}
 }
