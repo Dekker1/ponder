@@ -15,8 +15,7 @@
 package cmd
 
 import (
-	"fmt"
-
+	"github.com/jjdekker/ponder/compiler"
 	"github.com/spf13/cobra"
 )
 
@@ -27,7 +26,8 @@ var bookCmd = &cobra.Command{
 	// TODO: Write description
 	Long: ``,
 	Run: func(cmd *cobra.Command, args []string) {
-		fmt.Println("book called")
+		path, opts := getSettings()
+		compiler.MakeBook(path, opts)
 	},
 }
 
