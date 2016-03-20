@@ -22,15 +22,20 @@ import (
 	"github.com/jjdekker/ponder/settings"
 )
 
+var (
+	scores []*settings.Score
+)
+
 // CompileDir compiles all lilypond files and makes all
 // sheet music available in the OutputDir
 func CompileDir(path string, opts *settings.Settings) {
 	// Find all scores
-	scores, collector := generateScores()
+	collector := generateScores()
 	filepath.Walk(path, compilePath(path, opts, collector))
 
 	PrepareLilypond(opts)
-	for _, score := range *scores {
+	for _, score := range scores {
+		// TODO: compile only if there are changes
 		msg, err := Lilypond(score.Path)
 		if err != nil {
 			log.WithFields(log.Fields{
@@ -42,9 +47,8 @@ func CompileDir(path string, opts *settings.Settings) {
 	}
 }
 
-func generateScores() (*[]*settings.Score, func(string, os.FileInfo) error) {
-	var scores []*settings.Score
-	return &scores, func(path string, file os.FileInfo) error {
+func generateScores() func(string, os.FileInfo) error {
+	return func(path string, file os.FileInfo) error {
 		switch filepath.Ext(path) {
 		case ".ly":
 			log.WithFields(log.Fields{"path": path}).Info("adding lilypond file")
