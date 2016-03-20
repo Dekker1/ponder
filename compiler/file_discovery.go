@@ -69,6 +69,6 @@ func outputPath(source string, opts *settings.Settings) string {
 	if dot == -1 {
 		log.WithFields(log.Fields{"path": source}).Error("Unable to compute output path")
 	}
-	file = file[:dot] + "pdf"
+	file = file[:dot+1] + "pdf"
 	return filepath.Join(opts.OutputDir, file)
 }
