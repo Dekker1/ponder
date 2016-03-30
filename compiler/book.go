@@ -34,6 +34,7 @@ var bookTempl = `
 \usepackage[utf8]{inputenc}
 \usepackage{pdfpages}
 \usepackage[space]{grffile}
+\usepackage[pdftex,pdfpagelabels,bookmarks,hyperindex,hyperfigures]{hyperref}
 
 {{if ne .Settings.Name ""}}\\title{ {{.Settings.Name}} }{{end}}
 {{if ne .Settings.Author ""}}\\author{ {{.Settings.Author}} }{{end}}
@@ -42,7 +43,11 @@ var bookTempl = `
 \begin{document}
 \maketitle
 
+\newpage
+
 {{range .Scores}}
+\phantomsection
+\addcontentsline{toc}{section}{{printf "{"}}{{ .Name }}{{printf "}"}}
 \includepdf[pages=-]{{printf "{"}}{{call $.OutputPath .Path $.Settings}}{{printf "}"}}
 {{end}}
 
