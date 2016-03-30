@@ -14,11 +14,74 @@
 
 package compiler
 
-import "github.com/jjdekker/ponder/settings"
+import (
+	"os"
+	"os/exec"
+	"path/filepath"
+
+	log "github.com/Sirupsen/logrus"
+	"github.com/alecthomas/template"
+	"github.com/jjdekker/ponder/helpers"
+	"github.com/jjdekker/ponder/settings"
+)
+
+// TODO: Add git version
+// TODO: Support multiple authors
+// TODO: Support categories
+// TODO: Add working TOC
+var bookTempl = `
+\documentclass[a4paper,11pt]{article}
+\usepackage[utf8]{inputenc}
+\usepackage{pdfpages}
+\usepackage[space]{grffile}
+
+{{if ne .Settings.Name ""}}\\title{ {{.Settings.Name}} }{{end}}
+{{if ne .Settings.Author ""}}\\author{ {{.Settings.Author}} }{{end}}
+\date{\today}
+
+\begin{document}
+\maketitle
+
+{{range .Scores}}
+\includepdf[pages=-]{{printf "{"}}{{call $.OutputPath .Path $.Settings}}{{printf "}"}}
+{{end}}
+
+\end{document}
+`
 
 // MakeBook will combine all scores into a single songbook
 // generated using LaTeX.
 func MakeBook(path string, opts *settings.Settings) {
 	// Everything needs to be compiled
 	CompileDir(path, opts)
+	// Compile the book template
+	var templ = template.Must(template.New("songBook").Parse(bookTempl))
+
+	texPath := filepath.Join(opts.OutputDir, "songbook.tex")
+	log.WithFields(log.Fields{
+		"path": texPath,
+	}).Info("compiling songbook template")
+	f, err := os.Create(texPath)
+	helpers.Check(err, "could not create songbook texfile")
+	err = templ.Execute(f, &struct {
+		Scores     []*settings.Score
+		Settings   *settings.Settings
+		OutputPath func(string, *settings.Settings) string
+	}{
+		Scores:     scores,
+		Settings:   opts,
+		OutputPath: outputPath,
+	})
+	helpers.Check(err, "error executing book template")
+	f.Close()
+
+	// cmd := exec.Command("pdflatex", "-output-directory="+opts.OutputDir, texPath)
+	cmd := exec.Command("latexmk", "-silent", "-pdf", "-cd", texPath)
+	out, err := cmd.CombinedOutput()
+	if err != nil {
+		log.WithFields(log.Fields{
+			"message": string(out),
+			"error":   err,
+		}).Fatal("songbook failed to compile")
+	}
 }
