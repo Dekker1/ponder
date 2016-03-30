@@ -17,6 +17,7 @@ package compiler
 import (
 	"os"
 	"path/filepath"
+	"strings"
 
 	log "github.com/Sirupsen/logrus"
 	"github.com/jjdekker/ponder/helpers"
@@ -58,6 +59,7 @@ func generateScores() func(string, os.FileInfo) error {
 		case ".ly":
 			log.WithFields(log.Fields{"path": path}).Info("adding lilypond file")
 			scores = append(scores, &settings.Score{
+				Name:         filepath.Base(path)[:strings.LastIndex(filepath.Base(path), ".")],
 				Path:         path,
 				LastModified: file.ModTime(),
 			})
