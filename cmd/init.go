@@ -38,7 +38,7 @@ out/`)
 
 // initCmd represents the init command
 var initCmd = &cobra.Command{
-	Use:   "init [name]",
+	Use:   "init [location]",
 	Short: "Initialize a Ponder Library",
 	Long: `Initialize (ponder init) will create a new library, with a ponder
 	settings file and corresponding git ignore file.
