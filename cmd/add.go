@@ -40,7 +40,8 @@ The information saved in the json file will be used when compiling the songbook.
 		default:
 			log.Fatal("the add command needs exactly 1 parameter")
 		}
-		settings.CreateScore(path)
+		dir, _ := getSettings()
+		settings.CreateScore(path, dir)
 	},
 }
 
