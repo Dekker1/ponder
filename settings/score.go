@@ -46,3 +46,7 @@ func FromJSON(path string) (*Score, error) {
 
 	return &s, nil
 }
+
+func CreateScore(path string) {
+
+}
