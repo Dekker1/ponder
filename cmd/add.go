@@ -36,7 +36,7 @@ The information saved in the json file will be used when compiling the songbook.
 		switch len(args) {
 		case 1:
 			path, err = helpers.CleanPath(args[0])
-			helpers.Check(err, "Unable to ")
+			helpers.Check(err, "Unable to create valid path")
 		default:
 			log.Fatal("the add command needs exactly 1 parameter")
 		}

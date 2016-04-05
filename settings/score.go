@@ -16,18 +16,22 @@ package settings
 
 import (
 	"encoding/json"
+	"fmt"
 	"io/ioutil"
+	"path/filepath"
+	"strings"
 	"time"
 
+	log "github.com/Sirupsen/logrus"
 	"github.com/jjdekker/ponder/helpers"
 )
 
 // Score represents the settings for a specific score file
 type Score struct {
 	Name         string    // The name of the score in the songbook
-	Categories   []string  // Categories to which the scores belong
+	Categories   []string  `json:"omitempty"` // Categories to which the scores belong
 	Path         string    // The path to the scores (uncompiled) file
-	LastModified time.Time // Time when the score source was last modified (will be set internally)
+	LastModified time.Time `json:"omitempty"` // Time when the score source was last modified (will be set internally)
 }
 
 // FromJSON reads the settings of a score from a JSON file
@@ -47,6 +51,21 @@ func FromJSON(path string) (*Score, error) {
 	return &s, nil
 }
 
+// CreateScore creates a json file for a score given its path
 func CreateScore(path string) {
-
+	if filepath.Ext(path) != ".pdf" {
+		log.WithFields(log.Fields{"path": path}).
+			Warning("Unsupported sheet music file")
+	}
+	jsonPath := path[:strings.LastIndex(path, ".")]
+	fmt.Println(jsonPath)
+	s := Score{
+		Path: path,
+		Name: filepath.Base(jsonPath),
+		// TODO: Add folder as category when not in main folder
+	}
+	data, err := json.MarshalIndent(s, "", "  ")
+	helpers.Check(err, "Unable to generate valid json")
+	err = ioutil.WriteFile(jsonPath+".json", data, 0644)
+	helpers.Check(err, "Unable to save json to file")
 }
