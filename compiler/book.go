@@ -28,7 +28,6 @@ import (
 // TODO: Add git version
 // TODO: Support multiple authors
 // TODO: Support categories
-// TODO: Add working TOC
 var bookTempl = `
 \documentclass[a4paper,11pt]{article}
 \usepackage[utf8]{inputenc}
@@ -80,7 +79,6 @@ func MakeBook(path string, opts *settings.Settings) {
 	helpers.Check(err, "error executing book template")
 	f.Close()
 
-	// cmd := exec.Command("pdflatex", "-output-directory="+opts.OutputDir, texPath)
 	cmd := exec.Command("latexmk", "-silent", "-pdf", "-cd", texPath)
 	out, err := cmd.CombinedOutput()
 	if err != nil {
