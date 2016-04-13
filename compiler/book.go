@@ -29,7 +29,7 @@ import (
 // TODO: Support multiple authors
 // TODO: Support categories
 var bookTempl = `
-\documentclass[a4paper,11pt]{article}
+\documentclass[11pt,fleqn]{book}
 \usepackage[utf8]{inputenc}
 \usepackage{pdfpages}
 \usepackage[space]{grffile}
