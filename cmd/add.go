@@ -15,7 +15,7 @@
 package cmd
 
 import (
-	"log"
+	log "github.com/Sirupsen/logrus"
 
 	"github.com/jjdekker/ponder/helpers"
 	"github.com/jjdekker/ponder/settings"
@@ -24,7 +24,7 @@ import (
 
 // addCmd represents the add command
 var addCmd = &cobra.Command{
-	Use:   "add [file]",
+	Use:   "add [file]+",
 	Short: "Add pdf file to a book",
 	Long: `Add creates a json file with all options regarding a sheet music file in PDF format.
 The information saved in the json file will be used when compiling the songbook.`,
@@ -33,15 +33,13 @@ The information saved in the json file will be used when compiling the songbook.
 			path string
 			err  error
 		)
-		switch len(args) {
-		case 1:
-			path, err = helpers.CleanPath(args[0])
-			helpers.Check(err, "Unable to create valid path")
-		default:
-			log.Fatal("the add command needs exactly 1 parameter")
-		}
 		dir, _ := getSettings()
-		settings.CreateScore(path, dir)
+		for i := range args {
+			path, err = helpers.CleanPath(args[i])
+			helpers.Check(err, "Unable to create valid path")
+			log.WithFields(log.Fields{"path": path}).Info("creating score json file")
+			settings.CreateScore(path, dir)
+		}
 	},
 }
 
