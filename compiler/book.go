@@ -34,7 +34,7 @@ var bookTempl = `
 \usepackage[utf8]{inputenc}
 \usepackage{pdfpages}
 \usepackage[space]{grffile}
-\usepackage[pdftex,pdfpagelabels,bookmarks,hyperindex,hyperfigures]{hyperref}
+\usepackage{hyperref}
 
 {{if ne .Settings.Name ""}}\\title{ {{.Settings.Name}} }{{end}}
 {{if ne .Settings.Author ""}}\\author{ {{.Settings.Author}} }{{end}}
@@ -43,14 +43,26 @@ var bookTempl = `
 \begin{document}
 \maketitle
 
+{{range $i, $cat := .Categories}}
+\chapter{{printf "{"}}{{ . }}{{printf "}"}}
 \newpage
-
-{{range .Scores}}
+{{range $.Scores}}
+{{if in $cat .Categories }}
 \phantomsection
 \addcontentsline{toc}{section}{{printf "{"}}{{ .Name }}{{printf "}"}}
 \includepdf[pages=-]{{printf "{"}}{{.OutputPath}}{{printf "}"}}
 {{end}}
+{{end}}
+{{end}}
 
+{{ if unknown .Scores }} \chapter{Others} \newpage {{end}}
+{{range .Scores}}
+{{ if eq (len .Categories) 0 }}
+\phantomsection
+\addcontentsline{toc}{section}{{printf "{"}}{{ .Name }}{{printf "}"}}
+\includepdf[pages=-]{{printf "{"}}{{.OutputPath}}{{printf "}"}}
+{{end}}
+{{end}}
 \end{document}
 `
 
@@ -60,7 +72,10 @@ func MakeBook(path string, opts *settings.Settings) {
 	// Everything needs to be compiled
 	CompileDir(path, opts)
 	// Compile the book template
-	var templ = template.Must(template.New("songBook").Parse(bookTempl))
+	var templ = template.Must(template.New("songBook").Funcs(template.FuncMap{
+		"in": helpers.InSlice,
+		"unknown": unknownCategories,
+	}).Parse(bookTempl))
 
 	texPath := filepath.Join(opts.OutputDir, "songbook.tex")
 	log.WithFields(log.Fields{
@@ -71,9 +86,11 @@ func MakeBook(path string, opts *settings.Settings) {
 	err = templ.Execute(f, &struct {
 		Scores     *[]settings.Score
 		Settings   *settings.Settings
+		Categories []string
 	}{
 		Scores:     &scores,
 		Settings:   opts,
+		Categories: scoreCategories(&scores),
 	})
 	helpers.Check(err, "error executing book template")
 	f.Close()
@@ -95,7 +112,7 @@ func MakeBook(path string, opts *settings.Settings) {
 			"error":   err,
 		}).Error("failed to clean songbook latex files")
 	}
-	err = os.Remove(texPath)
+	// err = os.Remove(texPath)
 	helpers.Check(err, "could not remove songbook latex template")
 }
 
@@ -114,4 +131,15 @@ func scoreCategories(scores *[]settings.Score) []string {
 	}
 	sort.Strings(categories)
 	return categories
+}
+
+// unknownCategories returns true if the slice contains any scores with
+// unknown categories
+func unknownCategories(scores *[]settings.Score) bool {
+  for i := range *scores {
+    if len((*scores)[i].Categories) == 0 {
+      return true
+    }
+  }
+  return false
 }
