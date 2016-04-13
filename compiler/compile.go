@@ -25,7 +25,7 @@ import (
 )
 
 var (
-	scores []*settings.Score
+	scores []settings.Score
 )
 
 // CompileDir compiles all lilypond files and makes all
@@ -37,10 +37,10 @@ func CompileDir(path string, opts *settings.Settings) {
 
 	PrepareLilypond(opts)
 	for _, score := range scores {
-		output := outputPath(score.Path, opts)
+		score.GenerateOutputPath(opts)
 
-		if !helpers.Exists(output) ||
-			score.LastModified.After(helpers.LastModified(output)) {
+		if !helpers.Exists(score.OutputPath) ||
+			score.LastModified.After(helpers.LastModified(score.OutputPath)) {
 			msg, err := Lilypond(score.Path)
 			if err != nil {
 				log.WithFields(log.Fields{
@@ -58,7 +58,7 @@ func generateScores() func(string, os.FileInfo) error {
 		switch filepath.Ext(path) {
 		case ".ly":
 			log.WithFields(log.Fields{"path": path}).Info("adding lilypond file")
-			scores = append(scores, &settings.Score{
+			scores = append(scores, settings.Score{
 				Name:         filepath.Base(path)[:strings.LastIndex(filepath.Base(path), ".")],
 				Path:         path,
 				LastModified: file.ModTime(),
@@ -73,7 +73,7 @@ func generateScores() func(string, os.FileInfo) error {
 						"path":  path,
 					}).Warning("unable to parse score settings, skipping...")
 				} else {
-					scores = append(scores, score)
+					scores = append(scores, *score)
 				}
 			}
 

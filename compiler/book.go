@@ -47,7 +47,7 @@ var bookTempl = `
 {{range .Scores}}
 \phantomsection
 \addcontentsline{toc}{section}{{printf "{"}}{{ .Name }}{{printf "}"}}
-\includepdf[pages=-]{{printf "{"}}{{call $.OutputPath .Path $.Settings}}{{printf "}"}}
+\includepdf[pages=-]{{printf "{"}}{{.OutputPath}}{{printf "}"}}
 {{end}}
 
 \end{document}
@@ -68,13 +68,11 @@ func MakeBook(path string, opts *settings.Settings) {
 	f, err := os.Create(texPath)
 	helpers.Check(err, "could not create songbook texfile")
 	err = templ.Execute(f, &struct {
-		Scores     []*settings.Score
+		Scores     *[]settings.Score
 		Settings   *settings.Settings
-		OutputPath func(string, *settings.Settings) string
 	}{
-		Scores:     scores,
+		Scores:     &scores,
 		Settings:   opts,
-		OutputPath: outputPath,
 	})
 	helpers.Check(err, "error executing book template")
 	f.Close()

@@ -17,7 +17,6 @@ package compiler
 import (
 	"os"
 	"path/filepath"
-	"strings"
 
 	log "github.com/Sirupsen/logrus"
 	"github.com/jjdekker/ponder/helpers"
@@ -60,15 +59,4 @@ func compilePath(root string, opts *settings.Settings,
 		}
 		return nil
 	}
-}
-
-// outputPath returns the path that the compiled file will take
-func outputPath(source string, opts *settings.Settings) string {
-	file := filepath.Base(source)
-	dot := strings.LastIndex(file, ".")
-	if dot == -1 {
-		log.WithFields(log.Fields{"path": source}).Error("Unable to compute output path")
-	}
-	file = file[:dot+1] + "pdf"
-	return filepath.Join(opts.OutputDir, file)
 }

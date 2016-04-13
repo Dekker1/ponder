@@ -31,6 +31,7 @@ type Score struct {
 	Categories   []string  `json:",omitempty"` // Categories to which the scores belong
 	Path         string    // The path to the scores (uncompiled) file
 	LastModified time.Time `json:"-"` // Time when the score source was last modified (will be set internally)
+	OutputPath string `json:",omitempty"` // The path on which the compiled version of the score will be placed
 }
 
 // FromJSON reads the settings of a score from a JSON file
@@ -71,4 +72,19 @@ func CreateScore(path, workDir string) {
 	helpers.Check(err, "Unable to generate valid json")
 	err = ioutil.WriteFile(jsonPath+".json", data, 0644)
 	helpers.Check(err, "Unable to save json to file")
+}
+
+// GenerateOutputPath fills path that the compiled score will take
+func (s *Score) GenerateOutputPath(opts *Settings) {
+	if s.OutputPath != "" {
+		return
+	}
+	file := filepath.Base(s.Path)
+	dot := strings.LastIndex(file, ".")
+	if dot == -1 {
+		log.WithFields(log.Fields{"path": s.Path}).Error("Unable to compute output path")
+		return
+	}
+	file = file[:dot+1] + "pdf"
+	s.OutputPath = filepath.Join(opts.OutputDir, file)
 }
