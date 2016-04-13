@@ -41,7 +41,17 @@ func CompileDir(path string, opts *settings.Settings) {
 
 		if !helpers.Exists(scores[i].OutputPath) ||
 			scores[i].LastModified.After(helpers.LastModified(scores[i].OutputPath)) {
-			msg, err := Lilypond(scores[i].Path)
+			var (
+				msg string
+				err error
+			)
+			switch filepath.Ext(scores[i].Path){
+			case ".ly":
+				msg, err = Lilypond(scores[i].Path)
+			case ".pdf":
+				err = os.Link(scores[i].Path, scores[i].OutputPath)
+			}
+
 			if err != nil {
 				log.WithFields(log.Fields{
 					"message": msg,
