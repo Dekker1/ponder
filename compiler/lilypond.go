@@ -56,5 +56,6 @@ func Lilypond(path string) (string, error) {
 		"cmd":  cmd,
 	}).Info("compiling file using lilypond")
 	out, err := cmd.CombinedOutput()
+	log.Debug("finished compiling")
 	return string(out), err
 }

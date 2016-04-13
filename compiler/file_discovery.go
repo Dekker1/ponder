@@ -43,7 +43,7 @@ func compilePath(root string, opts *settings.Settings,
 			helpers.Check(err, "Unable to create relative Path")
 			for _, dir := range append(append(opts.IgnoreDirs, opts.LilypondIncludes...), opts.OutputDir) {
 				if relPath == dir || (filepath.IsAbs(dir) && path == dir) {
-					log.WithFields(log.Fields{"path": path}).Debug("Ignoring directory")
+					log.WithFields(log.Fields{"path": path}).Debug("ignoring directory")
 					return filepath.SkipDir
 				}
 			}

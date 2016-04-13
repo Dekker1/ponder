@@ -36,19 +36,23 @@ func CompileDir(path string, opts *settings.Settings) {
 	filepath.Walk(path, compilePath(path, opts, collector))
 
 	PrepareLilypond(opts)
-	for _, score := range scores {
-		score.GenerateOutputPath(opts)
+	for i := range scores {
+		scores[i].GenerateOutputPath(opts)
 
-		if !helpers.Exists(score.OutputPath) ||
-			score.LastModified.After(helpers.LastModified(score.OutputPath)) {
-			msg, err := Lilypond(score.Path)
+		if !helpers.Exists(scores[i].OutputPath) ||
+			scores[i].LastModified.After(helpers.LastModified(scores[i].OutputPath)) {
+			msg, err := Lilypond(scores[i].Path)
 			if err != nil {
 				log.WithFields(log.Fields{
 					"message": msg,
 					"error":   err,
-					"score":   score,
+					"score":   scores[i],
 				}).Warning("score failed to compile")
 			}
+		} else {
+			log.WithFields(log.Fields{
+				"score": scores[i],
+				}).Debug("skipping compilation")
 		}
 	}
 }
