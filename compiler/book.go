@@ -112,7 +112,7 @@ func MakeBook(path string, opts *settings.Settings) {
 			"error":   err,
 		}).Error("failed to clean songbook latex files")
 	}
-	// err = os.Remove(texPath)
+	err = os.Remove(texPath)
 	helpers.Check(err, "could not remove songbook latex template")
 }
 
