@@ -18,7 +18,7 @@ import (
 	"os"
 	"os/exec"
 	"path/filepath"
-	"fmt"
+	"sort"
 
 	log "github.com/Sirupsen/logrus"
 	"github.com/alecthomas/template"
@@ -59,7 +59,6 @@ var bookTempl = `
 func MakeBook(path string, opts *settings.Settings) {
 	// Everything needs to be compiled
 	CompileDir(path, opts)
-	fmt.Println(scoreCategories(&scores))
 	// Compile the book template
 	var templ = template.Must(template.New("songBook").Parse(bookTempl))
 
@@ -100,7 +99,7 @@ func MakeBook(path string, opts *settings.Settings) {
 	helpers.Check(err, "could not remove songbook latex template")
 }
 
-// scoreCategories returns a slice of all categories used
+// scoreCategories returns a sorted slice of all categories used
 // in the given slice of scores
 func scoreCategories(scores *[]settings.Score) []string {
 	catMap := make(map[string]struct{})
@@ -113,5 +112,6 @@ func scoreCategories(scores *[]settings.Score) []string {
 	for cat := range catMap {
 		categories = append(categories, cat)
 	}
+	sort.Strings(categories)
 	return categories
 }
