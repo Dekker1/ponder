@@ -68,6 +68,8 @@ var bookTempl = `
 func MakeBook(path string, opts *settings.Settings) {
 	// Everything needs to be compiled
 	CompileDir(path, opts)
+	// Sort scores
+	sort.Sort(settings.ScoresByName{scores})
 	// Compile the book template
 	var templ = template.Must(template.New("songBook").Funcs(template.FuncMap{
 		"in":      helpers.InSlice,

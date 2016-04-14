@@ -127,3 +127,25 @@ func (s *Score) GenerateOutputPath(opts *Settings) {
 	file = file[:dot+1] + "pdf"
 	s.OutputPath = filepath.Join(opts.OutputDir, file)
 }
+
+// Scores aliases a slice of scores
+type Scores []Score
+
+// ScoresByName implements sort.Interface by providing Less and using the Len and
+// Swap methods of the embedded Scores value.
+type ScoresByName struct{ Scores }
+
+// Len returns the number of scores and
+// implements part of the sort.Interface
+func (s Scores) Len() int { return len(s) }
+
+// Swap interchanges the position of two scores and
+// implements part of the sort.Interface
+func (s Scores) Swap(i, j int) { s[i], s[j] = s[j], s[i] }
+
+// Less reports whether the name of the score on position i is
+// smaller than the name of the score on position j
+// and implements part of the sort.Interface
+func (s ScoresByName) Less(i, j int) bool {
+	return s.Scores[i].Name < s.Scores[j].Name
+}
