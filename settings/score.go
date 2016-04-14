@@ -30,8 +30,8 @@ type Score struct {
 	Name         string    // The name of the score in the songbook
 	Categories   []string  `json:",omitempty"` // Categories to which the scores belong
 	Path         string    // The path to the scores (uncompiled) file
-	LastModified time.Time `json:"-"` // Time when the score source was last modified (will be set internally)
-	OutputPath string `json:",omitempty"` // The path on which the compiled version of the score will be placed
+	LastModified time.Time `json:"-"`          // Time when the score source was last modified (will be set internally)
+	OutputPath   string    `json:",omitempty"` // The path on which the compiled version of the score will be placed
 }
 
 // FromJSON reads the settings of a score from a JSON file

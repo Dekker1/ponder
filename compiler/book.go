@@ -73,7 +73,7 @@ func MakeBook(path string, opts *settings.Settings) {
 	CompileDir(path, opts)
 	// Compile the book template
 	var templ = template.Must(template.New("songBook").Funcs(template.FuncMap{
-		"in": helpers.InSlice,
+		"in":      helpers.InSlice,
 		"unknown": unknownCategories,
 	}).Parse(bookTempl))
 
@@ -136,10 +136,10 @@ func scoreCategories(scores *[]settings.Score) []string {
 // unknownCategories returns true if the slice contains any scores with
 // unknown categories
 func unknownCategories(scores *[]settings.Score) bool {
-  for i := range *scores {
-    if len((*scores)[i].Categories) == 0 {
-      return true
-    }
-  }
-  return false
+	for i := range *scores {
+		if len((*scores)[i].Categories) == 0 {
+			return true
+		}
+	}
+	return false
 }

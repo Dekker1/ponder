@@ -45,7 +45,7 @@ func CompileDir(path string, opts *settings.Settings) {
 				msg string
 				err error
 			)
-			switch filepath.Ext(scores[i].Path){
+			switch filepath.Ext(scores[i].Path) {
 			case ".ly":
 				msg, err = Lilypond(scores[i].Path)
 			case ".pdf":
@@ -62,7 +62,7 @@ func CompileDir(path string, opts *settings.Settings) {
 		} else {
 			log.WithFields(log.Fields{
 				"score": scores[i],
-				}).Debug("skipping compilation")
+			}).Debug("skipping compilation")
 		}
 	}
 }

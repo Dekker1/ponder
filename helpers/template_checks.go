@@ -16,10 +16,10 @@ package helpers
 
 // InSlice returns true if one of the elements in the slice a equals s
 func InSlice(s string, a []string) bool {
-  for i := range a {
-    if a[i] == s {
-      return true
-    }
-  }
-  return false
+	for i := range a {
+		if a[i] == s {
+			return true
+		}
+	}
+	return false
 }
