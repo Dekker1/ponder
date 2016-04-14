@@ -21,47 +21,9 @@ import (
 	"sort"
 
 	log "github.com/Sirupsen/logrus"
-	"github.com/alecthomas/template"
 	"github.com/jjdekker/ponder/helpers"
 	"github.com/jjdekker/ponder/settings"
 )
-
-// TODO: Add git version
-// TODO: Support multiple authors
-// TODO: Support categories
-var bookTempl = `
-\documentclass[11pt,fleqn]{book}
-\usepackage[utf8]{inputenc}
-\usepackage{pdfpages}
-\usepackage[space]{grffile}
-\usepackage{hyperref}
-
-{{if ne .Settings.Name ""}}\\title{ {{.Settings.Name}} }{{end}}
-{{if ne .Settings.Author ""}}\\author{ {{.Settings.Author}} }{{end}}
-\date{\today}
-
-\begin{document}
-\maketitle
-
-{{range $i, $cat := .Categories}}
-\chapter{{printf "{"}}{{ . }}{{printf "}"}}
-\newpage
-{{range $.Scores}}{{if in $cat .Categories }}
-\phantomsection
-\addcontentsline{toc}{section}{{printf "{"}}{{ .Name }}{{printf "}"}}
-\includepdf[pages=-]{{printf "{"}}{{.OutputPath}}{{printf "}"}}
-{{end}}{{end}}{{end}}
-
-{{if not .Settings.HideUncategorized }}{{ if unknown .Scores }}
-\chapter{{printf "{"}}{{ if ne .Settings.UncategorizedChapter "" }}{{.Settings.UncategorizedChapter}}{{else}}Others{{end}}{{printf "}"}} \newpage {{end}}
-{{range .Scores}}
-{{ if eq (len .Categories) 0 }}
-\phantomsection
-\addcontentsline{toc}{section}{{printf "{"}}{{ .Name }}{{printf "}"}}
-\includepdf[pages=-]{{printf "{"}}{{.OutputPath}}{{printf "}"}}
-{{end}}{{end}}{{end}}
-\end{document}
-`
 
 // MakeBook will combine all scores into a single songbook
 // generated using LaTeX.
@@ -70,11 +32,8 @@ func MakeBook(path string, opts *settings.Settings) {
 	CompileDir(path, opts)
 	// Sort scores
 	sort.Sort(settings.ScoresByName{scores})
-	// Compile the book template
-	var templ = template.Must(template.New("songBook").Funcs(template.FuncMap{
-		"in":      helpers.InSlice,
-		"unknown": unknownCategories,
-	}).Parse(bookTempl))
+
+	templ, err := parseBookTemplate(opts)
 
 	texPath := filepath.Join(opts.OutputDir, "songbook.tex")
 	log.WithFields(log.Fields{
