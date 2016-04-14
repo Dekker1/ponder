@@ -20,5 +20,7 @@ func main() {
 	cmd.Execute()
 }
 
-// TODO: Make a command to check that settings are legal:
-// TODO: - Check paths don't require WD knowledge
+// TODO: Make a command to check that settings are legal
+// TODO: Add a clean command
+// TODO: Add support for Ly files to the add command
+// TODO: Allow an latex input file for styling
