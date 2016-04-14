@@ -28,6 +28,7 @@ var (
 	settingsFile     = "ponder.json"
 	settingsTemplate = []byte(`{
   "Name": "",
+	"Author": "",
   "IgnoreDirs": [".git"],
   "LilypondIncludes": [],
   "OutputDir": "out"
