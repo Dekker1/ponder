@@ -32,6 +32,10 @@ type Settings struct {
 	OutputDir            string   // Directory in which all complete file are stored
 	HideUncategorized    bool     // Hide scores without a category from the book
 	UncategorizedChapter string   // Name of the chapter with uncategorized scores
+	BookPackagesTempl    string   // Override for the partial book template declaring packages
+	BookTitleTempl       string   // Override for the partial book template creating the title page
+	BookCategoryTempl    string   // Override for the partial book template creating category pages
+	BookScoreTempl       string   // Override for the partial book template placing scores
 }
 
 // FromFile reads a settings file in json format and returns the Settings struct

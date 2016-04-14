@@ -22,6 +22,7 @@ import (
 	"github.com/jjdekker/ponder/settings"
 )
 
+// parseBookTemplate parses all partial templates for the book
 func parseBookTemplate(opts *settings.Settings) (t *template.Template, err error) {
 	t = template.New("Songbook")
 	t.Funcs(template.FuncMap{
@@ -29,47 +30,68 @@ func parseBookTemplate(opts *settings.Settings) (t *template.Template, err error
 		"unknown": unknownCategories,
 	})
 
-	t, err = t.Parse(bookTempl)
+	parsePartialTemplate(t.New("Packages"), opts.BookPackagesTempl, packagesTempl)
+	parsePartialTemplate(t.New("Title"), opts.BookTitleTempl, titleTempl)
+	parsePartialTemplate(t.New("Category"), opts.BookCategoryTempl, categoryTempl)
+	parsePartialTemplate(t.New("Score"), opts.BookScoreTempl, scoreTempl)
+
+	_, err = t.Parse(bookTempl)
 	if err != nil {
 		log.WithFields(log.Fields{
 			"template": t,
 			"source":   bookTempl,
 			"error":    err,
-		}).Fatal("songbook template failed to compile")
+		}).Fatal("songbook template failed to parse")
 	}
 	return
 }
 
-const bookTempl = `
-\documentclass[11pt,fleqn]{book}
-\usepackage[utf8]{inputenc}
-\usepackage{pdfpages}
-\usepackage[space]{grffile}
-\usepackage{hyperref}
+func parsePartialTemplate(t *template.Template, source, fallback string) {
+	var err error
+	if source != "" {
+		_, err = t.Parse(source)
+	} else {
+		_, err = t.Parse(fallback)
+	}
+	if err != nil {
+		log.WithFields(log.Fields{
+			"source": packagesTempl,
+			"error":  err,
+		}).Fatal("packages partial template failed to parse")
+	}
+}
 
-{{if ne .Settings.Name ""}}\\title{ {{.Settings.Name}} }{{end}}
-{{if ne .Settings.Author ""}}\\author{ {{.Settings.Author}} }{{end}}
+const bookTempl = `{{ template "Packages" . }}
+
+{{if ne .Settings.Name ""}}\title{ {{.Settings.Name}} }{{end}}
+{{if ne .Settings.Author ""}}\author{ {{.Settings.Author}} }{{end}}
 \date{\today}
 
 \begin{document}
-\maketitle
+{{ template "Title" . }}
 
 {{range $i, $cat := .Categories}}
-\chapter{{printf "{"}}{{ . }}{{printf "}"}}
-\newpage
-{{range $.Scores}}{{if in $cat .Categories }}
-\phantomsection
-\addcontentsline{toc}{section}{{printf "{"}}{{ .Name }}{{printf "}"}}
-\includepdf[pages=-]{{printf "{"}}{{.OutputPath}}{{printf "}"}}
-{{end}}{{end}}{{end}}
+{{ template "Category" . }}
+{{range $.Scores}}{{if in $cat .Categories }}{{template "Score" . }}{{end}}{{end}}
+{{end}}
 
 {{if not .Settings.HideUncategorized }}{{ if unknown .Scores }}
-\chapter{{printf "{"}}{{ if ne .Settings.UncategorizedChapter "" }}{{.Settings.UncategorizedChapter}}{{else}}Others{{end}}{{printf "}"}} \newpage {{end}}
-{{range .Scores}}
-{{ if eq (len .Categories) 0 }}
-\phantomsection
-\addcontentsline{toc}{section}{{printf "{"}}{{ .Name }}{{printf "}"}}
-\includepdf[pages=-]{{printf "{"}}{{.OutputPath}}{{printf "}"}}
-{{end}}{{end}}{{end}}
+{{ if ne .Settings.UncategorizedChapter "" }}{{$title := .Settings.UncategorizedChapter}}{{else}}{{$title := "Others"}}{{ template "Category" $title }}{{end}}
+{{range .Scores}}{{ if eq (len .Categories) 0 }}{{template "Score" . }}{{end}}{{end}}
+{{end}}{{end}}
 \end{document}
 `
+
+const packagesTempl = `\documentclass[11pt,fleqn]{book}
+\usepackage[utf8]{inputenc}
+\usepackage{pdfpages}
+\usepackage[space]{grffile}
+\usepackage{hyperref}`
+
+const titleTempl = `\maketitle`
+
+const categoryTempl = `\chapter{{printf "{"}}{{ . }}{{printf "}"}}\newpage`
+
+const scoreTempl = `\phantomsection
+\addcontentsline{toc}{section}{{printf "{"}}{{ .Name }}{{printf "}"}}
+\includepdf[pages=-]{{printf "{"}}{{.OutputPath}}{{printf "}"}}`

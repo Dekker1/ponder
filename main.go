@@ -24,3 +24,4 @@ func main() {
 // TODO: Add a clean command
 // TODO: Add support for Ly files to the add command
 // TODO: Allow an latex input file for styling
+// TODO: Sort output into categories
