@@ -25,11 +25,12 @@ import (
 // Settings provides a structure to interact with the settings
 // of a Ponder library
 type Settings struct {
-	Name             string   // Name of the Ponder library
-	Author           string   // Author of the Ponder library
-	IgnoreDirs       []string // Directories to be ignored on search
-	LilypondIncludes []string // Directories to be included when running the lilypond compiler
-	OutputDir        string   // Directory in which all complete file are stored
+	Name              string   // Name of the Ponder library
+	Author            string   // Author of the Ponder library
+	IgnoreDirs        []string // Directories to be ignored on search
+	LilypondIncludes  []string // Directories to be included when running the lilypond compiler
+	OutputDir         string   // Directory in which all complete file are stored
+	HideUncategorized bool     // Hide scores without a category from the book
 }
 
 // FromFile reads a settings file in json format and returns the Settings struct

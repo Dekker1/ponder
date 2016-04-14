@@ -55,14 +55,13 @@ var bookTempl = `
 {{end}}
 {{end}}
 
-{{ if unknown .Scores }} \chapter{Others} \newpage {{end}}
+{{if not .Settings.HideUncategorized }}{{ if unknown .Scores }} \chapter{Others} \newpage {{end}}
 {{range .Scores}}
 {{ if eq (len .Categories) 0 }}
 \phantomsection
 \addcontentsline{toc}{section}{{printf "{"}}{{ .Name }}{{printf "}"}}
 \includepdf[pages=-]{{printf "{"}}{{.OutputPath}}{{printf "}"}}
-{{end}}
-{{end}}
+{{end}}{{end}}{{end}}
 \end{document}
 `
 
