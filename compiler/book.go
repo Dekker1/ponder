@@ -46,16 +46,14 @@ var bookTempl = `
 {{range $i, $cat := .Categories}}
 \chapter{{printf "{"}}{{ . }}{{printf "}"}}
 \newpage
-{{range $.Scores}}
-{{if in $cat .Categories }}
+{{range $.Scores}}{{if in $cat .Categories }}
 \phantomsection
 \addcontentsline{toc}{section}{{printf "{"}}{{ .Name }}{{printf "}"}}
 \includepdf[pages=-]{{printf "{"}}{{.OutputPath}}{{printf "}"}}
-{{end}}
-{{end}}
-{{end}}
+{{end}}{{end}}{{end}}
 
-{{if not .Settings.HideUncategorized }}{{ if unknown .Scores }} \chapter{Others} \newpage {{end}}
+{{if not .Settings.HideUncategorized }}{{ if unknown .Scores }}
+\chapter{{printf "{"}}{{ if ne .Settings.UncategorizedChapter "" }}{{.Settings.UncategorizedChapter}}{{else}}Others{{end}}{{printf "}"}} \newpage {{end}}
 {{range .Scores}}
 {{ if eq (len .Categories) 0 }}
 \phantomsection
