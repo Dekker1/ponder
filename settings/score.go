@@ -15,8 +15,10 @@
 package settings
 
 import (
+	"bufio"
 	"encoding/json"
 	"io/ioutil"
+	"os"
 	"path/filepath"
 	"strings"
 	"time"
@@ -24,6 +26,8 @@ import (
 	log "github.com/Sirupsen/logrus"
 	"github.com/jjdekker/ponder/helpers"
 )
+
+const lyToken = "% PONDER"
 
 // Score represents the settings for a specific score file
 type Score struct {
@@ -47,6 +51,41 @@ func FromJSON(path string) (*Score, error) {
 		return nil, err
 	}
 	s.LastModified = helpers.LastModified(s.Path)
+
+	return &s, nil
+}
+
+// FromLy reads the score metadata from a lilypond file.
+// The metadata should be on one line preceded by the lyToken.
+// The data itself should be in json format.
+func FromLy(path string) (*Score, error) {
+	file, err := os.Open(path)
+	if err != nil {
+		return nil, err
+	}
+	scan := bufio.NewScanner(file)
+	var line string
+	for scan.Scan() {
+		if strings.Contains(scan.Text(), lyToken) {
+			line = strings.TrimLeftFunc(scan.Text(), func(r rune) bool {
+				return r != '{'
+			})
+			break
+		}
+	}
+	file.Close()
+
+	var s Score
+	if line != "" {
+		err = json.Unmarshal([]byte(line), &s)
+		if err != nil {
+			return nil, err
+		}
+	}
+	if s.Name == "" {
+		s.Name = filepath.Base(path)[:strings.LastIndex(filepath.Base(path), ".")]
+	}
+	s.Path = path
 
 	return &s, nil
 }

@@ -17,7 +17,6 @@ package compiler
 import (
 	"os"
 	"path/filepath"
-	"strings"
 
 	log "github.com/Sirupsen/logrus"
 	"github.com/jjdekker/ponder/helpers"
@@ -69,30 +68,35 @@ func CompileDir(path string, opts *settings.Settings) {
 
 func generateScores() func(string, os.FileInfo) error {
 	return func(path string, file os.FileInfo) error {
+		var (
+			score *settings.Score
+			err   error
+		)
 		switch filepath.Ext(path) {
 		case ".ly":
 			log.WithFields(log.Fields{"path": path}).Info("adding lilypond file")
-			scores = append(scores, settings.Score{
-				Name:         filepath.Base(path)[:strings.LastIndex(filepath.Base(path), ".")],
-				Path:         path,
-				LastModified: file.ModTime(),
-			})
+			score, err = settings.FromLy(path)
+			if score != nil {
+				score.LastModified = file.ModTime()
+			}
 
 		case ".json":
 			if filepath.Base(path) != "ponder.json" {
 				log.WithFields(log.Fields{"path": path}).Info("adding json file")
-				if score, err := settings.FromJSON(path); err != nil {
-					log.WithFields(log.Fields{
-						"error": err,
-						"path":  path,
-					}).Warning("unable to parse score settings, skipping...")
-				} else {
-					scores = append(scores, *score)
-				}
+				score, err = settings.FromJSON(path)
 			}
 
 		default:
 			log.WithFields(log.Fields{"path": path}).Debug("ignoring file")
+		}
+
+		if err != nil {
+			log.WithFields(log.Fields{
+				"error": err,
+				"path":  path,
+			}).Warning("unable to parse score settings, skipping...")
+		} else if score != nil {
+			scores = append(scores, *score)
 		}
 		return nil
 	}
