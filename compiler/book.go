@@ -35,7 +35,7 @@ func MakeBook(path string, opts *settings.Settings) {
 
 	templ, err := parseBookTemplate(opts)
 
-	texPath := filepath.Join(opts.OutputDir, "songbook.tex")
+	texPath := filepath.Join(opts.OutputDir, opts.Name+".tex")
 	log.WithFields(log.Fields{
 		"path": texPath,
 	}).Info("compiling songbook template")
