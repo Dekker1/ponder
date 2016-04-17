@@ -48,7 +48,12 @@ func CompileDir(path string, opts *settings.Settings) {
 			case ".ly":
 				msg, err = Lilypond(scores[i].Path)
 			case ".pdf":
-				err = os.Link(scores[i].Path, scores[i].OutputPath)
+				if helpers.Exists(scores[i].OutputPath) {
+					os.Remove(scores[i].OutputPath)
+				}
+				if err == nil {
+					err = os.Link(scores[i].Path, scores[i].OutputPath)
+				}
 			}
 
 			if err != nil {
@@ -60,7 +65,8 @@ func CompileDir(path string, opts *settings.Settings) {
 			}
 		} else {
 			log.WithFields(log.Fields{
-				"score": scores[i],
+				"score":         scores[i],
+				"outputVersion": helpers.LastModified(scores[i].OutputPath),
 			}).Debug("skipping compilation")
 		}
 	}
@@ -84,6 +90,7 @@ func generateScores() func(string, os.FileInfo) error {
 			if filepath.Base(path) != "ponder.json" {
 				log.WithFields(log.Fields{"path": path}).Info("adding json file")
 				score, err = settings.FromJSON(path)
+				score.LastModified = helpers.LastModified(score.Path)
 			}
 
 		default:
