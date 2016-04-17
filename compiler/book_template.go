@@ -92,6 +92,4 @@ const titleTempl = `\maketitle`
 
 const categoryTempl = `\chapter{{printf "{"}}{{ . }}{{printf "}"}}\newpage`
 
-const scoreTempl = `\phantomsection
-\addcontentsline{toc}{section}{{printf "{"}}{{ .Name }}{{printf "}"}}
-\includepdf[pages=-]{{printf "{"}}{{.OutputPath}}{{printf "}"}}`
+const scoreTempl = `\includepdf[addtotoc={1,section,1,{{ printf "{%s}" .Name }},}, pages=-]{{printf "{%s}" .OutputPath}}`
