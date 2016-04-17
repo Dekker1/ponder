@@ -31,7 +31,6 @@ var (
 // PrepareLilypond sets all arguments and options for the Lilypond
 // compilation function using the given settings
 func PrepareLilypond(opts *settings.Settings) {
-	// TODO: Escape these directory strings
 	// Adds all includes to the lilypond arguments
 	for _, dir := range opts.LilypondIncludes {
 		lilypondArgs = append(lilypondArgs, "--include="+dir)

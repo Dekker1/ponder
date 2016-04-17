@@ -23,8 +23,7 @@ import (
 var bookCmd = &cobra.Command{
 	Use:   "book",
 	Short: "Generate library songbook",
-	// TODO: Write description
-	Long: ``,
+	Long:  ``,
 	Run: func(cmd *cobra.Command, args []string) {
 		path, opts := getSettings()
 		compiler.MakeBook(path, opts)

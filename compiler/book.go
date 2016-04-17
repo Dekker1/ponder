@@ -53,7 +53,6 @@ func MakeBook(path string, opts *settings.Settings) {
 	helpers.Check(err, "error executing book template")
 	f.Close()
 
-	// TODO: Better error messages when there is an error compiling latex
 	cmd := exec.Command("latexmk", "-silent", "-pdf", "-cd", texPath)
 	out, err := cmd.CombinedOutput()
 	if err != nil {
@@ -71,7 +70,6 @@ func MakeBook(path string, opts *settings.Settings) {
 			"error":   err,
 		}).Error("failed to clean songbook latex files")
 	}
-	// TODO: Make optional by flag
 	err = os.Remove(texPath)
 	helpers.Check(err, "could not remove songbook latex template")
 }
