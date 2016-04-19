@@ -36,6 +36,7 @@ type Settings struct {
 	BookTitleTempl       string   // Override for the partial book template creating the title page
 	BookCategoryTempl    string   // Override for the partial book template creating category pages
 	BookScoreTempl       string   // Override for the partial book template placing scores
+	KeepBookTemplate     bool     // Leave the LaTeX source for the book in the output directory
 }
 
 // FromFile reads a settings file in json format and returns the Settings struct

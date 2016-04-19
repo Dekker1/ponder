@@ -19,6 +19,8 @@ import (
 	"github.com/spf13/cobra"
 )
 
+var keepTemplate bool
+
 // bookCmd represents the book command
 var bookCmd = &cobra.Command{
 	Use:   "book",
@@ -26,10 +28,13 @@ var bookCmd = &cobra.Command{
 	Long:  ``,
 	Run: func(cmd *cobra.Command, args []string) {
 		path, opts := getSettings()
+		opts.KeepBookTemplate = opts.KeepBookTemplate || keepTemplate
 		compiler.MakeBook(path, opts)
 	},
 }
 
 func init() {
+	bookCmd.Flags().BoolVarP(&keepTemplate, "keep-template",
+		"k", false, "Leave the LaTeX source for the book in the output directory")
 	RootCmd.AddCommand(bookCmd)
 }
