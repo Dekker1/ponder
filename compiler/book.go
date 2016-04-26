@@ -33,6 +33,8 @@ func MakeBook(path string, opts *settings.Settings) {
 	// Sort scores
 	sort.Sort(settings.ScoresByName{scores})
 
+	getBookResources(opts)
+
 	templ, err := parseBookTemplate(opts)
 
 	texPath := filepath.Join(opts.OutputDir, opts.Name+".tex")
@@ -62,18 +64,7 @@ func MakeBook(path string, opts *settings.Settings) {
 		}).Fatal("songbook failed to compile")
 	}
 
-	cmd = exec.Command("latexmk", "-c", "-cd", texPath)
-	out, err = cmd.CombinedOutput()
-	if err != nil {
-		log.WithFields(log.Fields{
-			"message": string(out),
-			"error":   err,
-		}).Error("failed to clean songbook latex files")
-	}
-	if !opts.KeepBookTemplate {
-		err = os.Remove(texPath)
-	}
-	helpers.Check(err, "could not remove songbook latex template")
+	cleanBookResources(texPath, opts)
 }
 
 // scoreCategories returns a sorted slice of all categories used
@@ -102,4 +93,45 @@ func unknownCategories(scores *[]settings.Score) bool {
 		}
 	}
 	return false
+}
+
+// getBookResources copies the LaTeX resources to the compile directory
+func getBookResources(opts *settings.Settings) {
+	for i := range opts.LatexResources {
+		log.WithFields(log.Fields{"path": opts.LatexResources[i]}).Debug("copying latex resource")
+
+		err := os.Link(opts.LatexResources[i], filepath.Join(opts.OutputDir, filepath.Base(opts.LatexResources[i])))
+
+		if err != nil {
+			log.WithError(err).Warning("could not link LaTeX resource")
+		}
+	}
+}
+
+// cleanBookResources removes both LaTeX generated files and copied resources
+func cleanBookResources(bookpath string, opts *settings.Settings) {
+	var err error
+	log.Debug("removing LaTeX resources")
+	for i := range opts.LatexResources {
+		err = os.RemoveAll(filepath.Join(opts.OutputDir, filepath.Base(opts.LatexResources[i])))
+		if err != nil {
+			helpers.Check(err, "could not remove latex resource")
+		}
+	}
+
+	log.Debug("removing LaTeX generated files")
+	cmd := exec.Command("latexmk", "-c", "-cd", bookpath)
+	out, err := cmd.CombinedOutput()
+	if err != nil {
+		log.WithFields(log.Fields{
+			"message": string(out),
+			"error":   err,
+		}).Error("failed to clean songbook latex files")
+	}
+
+	if !opts.KeepBookTemplate {
+		log.Debug("removing LaTeX template")
+		err = os.Remove(bookpath)
+	}
+	helpers.Check(err, "could not remove songbook latex template")
 }

@@ -36,6 +36,7 @@ type Settings struct {
 	BookTitleTempl       string   // Override for the partial book template creating the title page
 	BookCategoryTempl    string   // Override for the partial book template creating category pages
 	BookScoreTempl       string   // Override for the partial book template placing scores
+	LatexResources       []string // Files to be copied to compile the book template
 	KeepBookTemplate     bool     // Leave the LaTeX source for the book in the output directory
 }
 
@@ -63,6 +64,9 @@ func (s *Settings) AbsolutePaths(root string) {
 	}
 	for i := range s.LilypondIncludes {
 		s.LilypondIncludes[i] = helpers.AbsolutePath(s.LilypondIncludes[i], root)
+	}
+	for i := range s.LatexResources {
+		s.LatexResources[i] = helpers.AbsolutePath(s.LatexResources[i], root)
 	}
 	s.OutputDir = helpers.AbsolutePath(s.OutputDir, root)
 }

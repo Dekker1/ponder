@@ -18,9 +18,7 @@ import log "github.com/Sirupsen/logrus"
 
 // Crash outputs it's arguments to the log and stops the program
 func Crash(err error, msg string) {
-	log.WithFields(log.Fields{
-		"error": err,
-	}).Fatal(msg)
+	log.WithError(err).Fatal(msg)
 }
 
 // Check calls Crash if the error is not nil
