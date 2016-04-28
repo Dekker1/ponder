@@ -33,7 +33,7 @@ const lyToken = "% PONDER"
 type Score struct {
 	Name         string    // The name of the score in the songbook
 	Categories   []string  `json:",omitempty"` // Categories to which the scores belong
-	Path         string    // The path to the scores (uncompiled) file
+	Path         string    `json:",omitempty"` // The path to the scores (uncompiled) file
 	LastModified time.Time `json:"-"`          // Time when the score source was last modified (will be set internally)
 	OutputPath   string    `json:",omitempty"` // The path on which the compiled version of the score will be placed
 }
@@ -92,25 +92,41 @@ func FromLy(path string) (*Score, error) {
 
 // CreateScore creates a json file for a score given its path
 func CreateScore(path, workDir string) {
-	if filepath.Ext(path) != ".pdf" {
+	if filepath.Ext(path) != ".pdf" && filepath.Ext(path) != ".ly" {
 		log.WithFields(log.Fields{"path": path}).
-			Warning("Unsupported sheet music file")
+			Fatal("Unsupported file type")
 	}
 
 	jsonPath := path[:strings.LastIndex(path, ".")]
-	s := Score{
-		Path: path,
-		Name: filepath.Base(jsonPath),
-	}
+	s := Score{Name: filepath.Base(jsonPath)}
 
 	if filepath.Dir(path) != workDir {
 		s.Categories = []string{filepath.Base(filepath.Dir(path))}
 	}
 
-	data, err := json.MarshalIndent(s, "", "  ")
-	helpers.Check(err, "Unable to generate valid json")
-	err = ioutil.WriteFile(jsonPath+".json", data, 0644)
-	helpers.Check(err, "Unable to save json to file")
+	var (
+		data []byte
+		err  error
+	)
+	if filepath.Ext(path) == ".ly" {
+		data, err = json.Marshal(s)
+		helpers.Check(err, "Unable to generate valid json")
+		data = append(append([]byte(lyToken), data...), byte('\n'))
+
+		var ly []byte
+		ly, err = ioutil.ReadFile(path)
+		helpers.Check(err, "Unable to read lilypond file")
+
+		err = ioutil.WriteFile(path, append(data, ly...), 0644)
+		helpers.Check(err, "Unable to write data to lilypond file")
+	} else {
+		s.Path = path
+
+		data, err = json.MarshalIndent(s, "", "  ")
+		helpers.Check(err, "Unable to generate valid json")
+		err = ioutil.WriteFile(jsonPath+".json", data, 0644)
+		helpers.Check(err, "Unable to save json to file")
+	}
 }
 
 // GenerateOutputPath fills path that the compiled score will take
