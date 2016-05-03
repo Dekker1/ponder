@@ -46,14 +46,9 @@ func CompileDir(path string, opts *settings.Settings) {
 			)
 			switch filepath.Ext(scores[i].Path) {
 			case ".ly":
-				msg, err = Lilypond(scores[i].Path)
+				msg, err = Lilypond(&scores[i])
 			case ".pdf":
-				if helpers.Exists(scores[i].OutputPath) {
-					os.Remove(scores[i].OutputPath)
-				}
-				if err == nil {
-					err = os.Link(scores[i].Path, scores[i].OutputPath)
-				}
+				err = linkPDF(&scores[i])
 			}
 
 			if err != nil {
@@ -107,4 +102,16 @@ func generateScores() func(string, os.FileInfo) error {
 		}
 		return nil
 	}
+}
+
+func linkPDF(s *settings.Score) (err error) {
+	err = helpers.ExistsOrCreate(filepath.Dir(s.OutputPath))
+	if err != nil {
+		return err
+	}
+	if helpers.Exists(s.OutputPath) {
+		os.Remove(s.OutputPath)
+	}
+	err = os.Link(s.Path, s.OutputPath)
+	return
 }

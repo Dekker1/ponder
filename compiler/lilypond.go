@@ -15,8 +15,8 @@
 package compiler
 
 import (
-	"os"
 	"os/exec"
+	"path/filepath"
 
 	log "github.com/Sirupsen/logrus"
 	"github.com/jjdekker/ponder/helpers"
@@ -37,21 +37,21 @@ func PrepareLilypond(opts *settings.Settings) {
 	}
 	lilypondArgs = append(lilypondArgs, "--loglevel=ERROR")
 	lilypondArgs = append(lilypondArgs, "--pdf")
-
-	lilypondArgs = append(lilypondArgs, "--output="+opts.OutputDir)
-	if !helpers.Exists(opts.OutputDir) {
-		log.WithFields(log.Fields{"path": opts.OutputDir}).Info("creating output directory")
-		err := os.MkdirAll(opts.OutputDir, os.ModePerm)
-		helpers.Check(err, "Could not create output directory")
-	}
 }
 
 // Lilypond runs the lilypond compiler on the given path
 // using the arguments prepared by the PrepareLilypond function
-func Lilypond(path string) (string, error) {
-	cmd := exec.Command(lilypondCmd, append(lilypondArgs, path)...)
+func Lilypond(s *settings.Score) (string, error) {
+	args := append(lilypondArgs, "--output="+filepath.Dir(s.OutputPath))
+	err := helpers.ExistsOrCreate(filepath.Dir(s.OutputPath))
+	if err != nil {
+		return "", err
+	}
+	args = append(args, s.Path)
+
+	cmd := exec.Command(lilypondCmd, args...)
 	log.WithFields(log.Fields{
-		"path": path,
+		"path": s.Path,
 		"cmd":  cmd,
 	}).Info("compiling file using lilypond")
 	out, err := cmd.CombinedOutput()

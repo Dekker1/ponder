@@ -55,6 +55,15 @@ func Exists(path string) bool {
 	return false
 }
 
+// ExistsOrCreate will create a directory unless it already Exists
+func ExistsOrCreate(path string) (err error) {
+	if !Exists(path) {
+		log.WithFields(log.Fields{"path": path}).Info("creating directory")
+		err = os.MkdirAll(path, os.ModePerm)
+	}
+	return
+}
+
 // LastModified returns the time the file on the path was last modified,
 // if file lookup fails the current time is returned.
 func LastModified(path string) time.Time {

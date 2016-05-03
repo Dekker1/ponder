@@ -141,7 +141,11 @@ func (s *Score) GenerateOutputPath(opts *Settings) {
 		return
 	}
 	file = file[:dot+1] + "pdf"
-	s.OutputPath = filepath.Join(opts.OutputDir, file)
+	s.OutputPath = opts.OutputDir
+	if !opts.FlatOutputDir && len(s.Categories) > 0 {
+		s.OutputPath = filepath.Join(s.OutputPath, s.Categories[0])
+	}
+	s.OutputPath = filepath.Join(s.OutputPath, file)
 }
 
 // Scores aliases a slice of scores
