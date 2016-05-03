@@ -80,7 +80,7 @@ func generateScores() func(string, os.FileInfo) error {
 		)
 		switch filepath.Ext(path) {
 		case ".ly":
-			log.WithFields(log.Fields{"path": path}).Info("adding lilypond file")
+			log.WithFields(log.Fields{"path": path}).Debug("adding lilypond file")
 			score, err = settings.FromLy(path)
 			if score != nil {
 				score.LastModified = file.ModTime()
@@ -88,7 +88,7 @@ func generateScores() func(string, os.FileInfo) error {
 
 		case ".json":
 			if filepath.Base(path) != "ponder.json" {
-				log.WithFields(log.Fields{"path": path}).Info("adding json file")
+				log.WithFields(log.Fields{"path": path}).Debug("adding json file")
 				score, err = settings.FromJSON(path)
 				score.LastModified = helpers.LastModified(score.Path)
 			}
