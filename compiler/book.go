@@ -37,6 +37,10 @@ func MakeBook(path string, opts *settings.Settings) {
 
 	templ, err := parseBookTemplate(opts)
 
+	if len(opts.DefaultCategories) == 0 {
+		opts.DefaultCategories = scoreCategories(&scores)
+	}
+
 	texPath := filepath.Join(opts.OutputDir, opts.Name+".tex")
 	log.WithFields(log.Fields{
 		"path": texPath,
@@ -50,7 +54,7 @@ func MakeBook(path string, opts *settings.Settings) {
 	}{
 		Scores:     &scores,
 		Settings:   opts,
-		Categories: scoreCategories(&scores),
+		Categories: opts.DefaultCategories,
 	})
 	helpers.Check(err, "error executing book template")
 	f.Close()
