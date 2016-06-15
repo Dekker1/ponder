@@ -40,6 +40,7 @@ type Settings struct {
 	KeepBookTemplate     bool     // Leave the LaTeX source for the book in the output directory
 	FlatOutputDir        bool     // Keep all output file in a flat output directory
 	DefaultCategories    []string // Categories included in the book by default
+	EnablePointAndClick  bool     // Enable Lilypond's Point and Click functionality
 }
 
 // FromFile reads a settings file in json format and returns the Settings struct

@@ -29,10 +29,13 @@ Files that have already been compiled will be skipped,
 unless the lilypond file has been edited.`,
 	Run: func(cmd *cobra.Command, args []string) {
 		path, opts := getSettings()
+		opts.EnablePointAndClick = opts.EnablePointAndClick || enablePointAndClick
 		compiler.CompileDir(path, opts)
 	},
 }
 
 func init() {
+	compileCmd.Flags().BoolVarP(&enablePointAndClick, "clickable",
+		"c", false, "Enable Lilypond's Point and Click functionality")
 	RootCmd.AddCommand(compileCmd)
 }

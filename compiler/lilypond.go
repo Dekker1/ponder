@@ -37,6 +37,9 @@ func PrepareLilypond(opts *settings.Settings) {
 	}
 	lilypondArgs = append(lilypondArgs, "--loglevel=ERROR")
 	lilypondArgs = append(lilypondArgs, "--pdf")
+	if !opts.EnablePointAndClick {
+		lilypondArgs = append(lilypondArgs, "-dno-point-and-click")
+	}
 }
 
 // Lilypond runs the lilypond compiler on the given path

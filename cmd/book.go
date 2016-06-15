@@ -20,6 +20,7 @@ import (
 )
 
 var keepTemplate bool
+var enablePointAndClick bool
 
 // bookCmd represents the book command
 var bookCmd = &cobra.Command{
@@ -29,6 +30,7 @@ var bookCmd = &cobra.Command{
 	Run: func(cmd *cobra.Command, args []string) {
 		path, opts := getSettings()
 		opts.KeepBookTemplate = opts.KeepBookTemplate || keepTemplate
+		opts.EnablePointAndClick = opts.EnablePointAndClick || enablePointAndClick
 		compiler.MakeBook(path, opts)
 	},
 }
@@ -36,5 +38,7 @@ var bookCmd = &cobra.Command{
 func init() {
 	bookCmd.Flags().BoolVarP(&keepTemplate, "keep-template",
 		"k", false, "Leave the LaTeX source for the book in the output directory")
+	bookCmd.Flags().BoolVarP(&enablePointAndClick, "clickable",
+		"c", false, "Enable Lilypond's Point and Click functionality")
 	RootCmd.AddCommand(bookCmd)
 }
