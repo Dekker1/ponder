@@ -44,19 +44,23 @@ type Settings struct {
 }
 
 // FromFile reads a settings file in json format and returns the Settings struct
-func FromFile(path string) (*Settings, error) {
+func FromFile(path string) (map[string]Settings, error) {
 	data, err := ioutil.ReadFile(path)
 	if err != nil {
 		return nil, err
 	}
 
-	var s Settings
+	s := make(map[string]Settings)
 	err = json.Unmarshal(data, &s)
 	if err != nil {
 		return nil, err
 	}
-	s.AbsolutePaths(filepath.Dir(path))
-	return &s, nil
+	for i := range s {
+		set := s[i]
+		set.AbsolutePaths(filepath.Dir(path))
+		s[i] = set
+	}
+	return s, nil
 }
 
 // AbsolutePaths makes all paths in settings absolute using the given

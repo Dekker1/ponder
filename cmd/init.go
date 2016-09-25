@@ -26,12 +26,13 @@ import (
 
 var (
 	settingsFile     = "ponder.json"
-	settingsTemplate = []byte(`{
-  "Name": "",
-	"Author": "",
-  "IgnoreDirs": [".git"],
-  "LilypondIncludes": [],
-  "OutputDir": "out"
+	settingsTemplate = []byte(`{ "default" : {
+	  "Name": "",
+		"Author": "",
+	  "IgnoreDirs": [".git"],
+	  "LilypondIncludes": [],
+	  "OutputDir": "out"
+	}
 }`)
 	gitIgnoreTemplate = []byte(`# Output Folder
 out/`)

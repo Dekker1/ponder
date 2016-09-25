@@ -77,5 +77,7 @@ func getSettings() (string, *settings.Settings) {
 	opts, err := settings.FromFile(filepath.Join(path, settingsFile))
 	helpers.Check(err, "unable to parse settings file")
 
-	return path, opts
+	set := opts["default"]
+
+	return path, &set
 }
