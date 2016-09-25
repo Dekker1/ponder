@@ -27,6 +27,7 @@ import (
 var (
 	veryVerbose bool
 	verbose     bool
+	target      string
 )
 
 // RootCmd represents the base command when called without any subcommands
@@ -56,6 +57,7 @@ func Execute() {
 func init() {
 	RootCmd.PersistentFlags().BoolVarP(&verbose, "verbose", "v", false, "Verbose output of application events")
 	RootCmd.PersistentFlags().BoolVar(&veryVerbose, "vv", false, "Debug output of application events")
+	RootCmd.PersistentFlags().StringVarP(&target, "target", "t", "default", "Settings target to be used")
 }
 
 func setLogLevel() {
@@ -77,7 +79,10 @@ func getSettings() (string, *settings.Settings) {
 	opts, err := settings.FromFile(filepath.Join(path, settingsFile))
 	helpers.Check(err, "unable to parse settings file")
 
-	set := opts["default"]
+	set, ok := opts[target]
+	if !ok {
+		helpers.Crash(nil, "unknown compilation target: "+target)
+	}
 
 	return path, &set
 }
