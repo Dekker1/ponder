@@ -41,7 +41,8 @@ func compilePath(root string, opts *settings.Settings,
 			// Skip directories that are ignored
 			relPath, err := filepath.Rel(root, path)
 			helpers.Check(err, "Unable to create relative Path")
-			for _, dir := range append(append(opts.IgnoreDirs, opts.LilypondIncludes...), opts.OutputDir) {
+			for _, dir := range append(append(append(opts.IgnoreDirs,
+				opts.LilypondIncludes...), opts.OutputDir), opts.BookTemplateDir) {
 				if relPath == dir || (filepath.IsAbs(dir) && path == dir) {
 					log.WithFields(log.Fields{"path": path}).Debug("ignoring directory")
 					return filepath.SkipDir

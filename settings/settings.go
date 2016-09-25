@@ -32,11 +32,8 @@ type Settings struct {
 	OutputDir            string   // Directory in which all complete file are stored
 	HideUncategorized    bool     // Hide scores without a category from the book
 	UncategorizedChapter string   // Name of the chapter with uncategorized scores
-	BookPackagesTempl    string   // Override for the partial book template declaring packages
-	BookTitleTempl       string   // Override for the partial book template creating the title page
-	BookCategoryTempl    string   // Override for the partial book template creating category pages
-	BookScoreTempl       string   // Override for the partial book template placing scores
-	LatexResources       []string // Files to be copied to compile the book template
+	BookTemplateDir      string   // Directory in which partial book templates are placed
+	LatexResources       []string // Files (or directories) to be copied to compile the book template
 	KeepBookTemplate     bool     // Leave the LaTeX source for the book in the output directory
 	FlatOutputDir        bool     // Keep all output file in a flat output directory
 	DefaultCategories    []string // Categories included in the book by default
@@ -76,4 +73,5 @@ func (s *Settings) AbsolutePaths(root string) {
 		s.LatexResources[i] = helpers.AbsolutePath(s.LatexResources[i], root)
 	}
 	s.OutputDir = helpers.AbsolutePath(s.OutputDir, root)
+	s.BookTemplateDir = helpers.AbsolutePath(s.BookTemplateDir, root)
 }

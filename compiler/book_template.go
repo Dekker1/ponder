@@ -15,6 +15,7 @@
 package compiler
 
 import (
+	"path/filepath"
 	"text/template"
 
 	log "github.com/Sirupsen/logrus"
@@ -30,10 +31,14 @@ func parseBookTemplate(opts *settings.Settings) (t *template.Template, err error
 		"unknown": unknownCategories,
 	})
 
-	parsePartialTemplate(t.New("Packages"), opts.BookPackagesTempl, packagesTempl)
-	parsePartialTemplate(t.New("Title"), opts.BookTitleTempl, titleTempl)
-	parsePartialTemplate(t.New("Category"), opts.BookCategoryTempl, categoryTempl)
-	parsePartialTemplate(t.New("Score"), opts.BookScoreTempl, scoreTempl)
+	parsePartialTemplate(t.New("packages.tex.tmpl"),
+		filepath.Join(opts.BookTemplateDir, "packages.tex.tmpl"), packagesTempl)
+	parsePartialTemplate(t.New("title.tex.tmpl"),
+		filepath.Join(opts.BookTemplateDir, "title.tex.tmpl"), titleTempl)
+	parsePartialTemplate(t.New("category.tex.tmpl"),
+		filepath.Join(opts.BookTemplateDir, "category.tex.tmpl"), categoryTempl)
+	parsePartialTemplate(t.New("score.tex.tmpl"),
+		filepath.Join(opts.BookTemplateDir, "score.tex.tmpl"), scoreTempl)
 
 	_, err = t.Parse(bookTempl)
 	if err != nil {
@@ -46,10 +51,10 @@ func parseBookTemplate(opts *settings.Settings) (t *template.Template, err error
 	return
 }
 
-func parsePartialTemplate(t *template.Template, source, fallback string) {
+func parsePartialTemplate(t *template.Template, sourceFile, fallback string) {
 	var err error
-	if source != "" {
-		_, err = t.Parse(source)
+	if helpers.Exists(sourceFile) {
+		_, err = t.ParseFiles(sourceFile)
 	} else {
 		_, err = t.Parse(fallback)
 	}
@@ -61,23 +66,23 @@ func parsePartialTemplate(t *template.Template, source, fallback string) {
 	}
 }
 
-const bookTempl = `{{ template "Packages" . }}
+const bookTempl = `{{ template "packages.tex.tmpl" . }}
 
 {{if ne .Settings.Name ""}}\title{ {{.Settings.Name}} }{{end}}
 {{if ne .Settings.Author ""}}\author{ {{.Settings.Author}} }{{end}}
 \date{\today}
 
 \begin{document}
-{{ template "Title" . }}
+{{ template "title.tex.tmpl" . }}
 
 {{range $i, $cat := .Categories}}
-{{ template "Category" . }}
-{{range $.Scores}}{{if in $cat .Categories }}{{template "Score" . }}{{end}}{{end}}
+{{ template "category.tex.tmpl" . }}
+{{range $.Scores}}{{if in $cat .Categories }}{{template "score.tex.tmpl" . }}{{end}}{{end}}
 {{end}}
 
 {{if not .Settings.HideUncategorized }}{{ if unknown .Scores }}
-{{ if ne .Settings.UncategorizedChapter "" }}{{$title := .Settings.UncategorizedChapter}}{{else}}{{$title := "Others"}}{{ template "Category" $title }}{{end}}
-{{range .Scores}}{{ if eq (len .Categories) 0 }}{{template "Score" . }}{{end}}{{end}}
+{{ if ne .Settings.UncategorizedChapter "" }}{{$title := .Settings.UncategorizedChapter}}{{else}}{{$title := "Others"}}{{ template "category.tex.tmpl" $title }}{{end}}
+{{range .Scores}}{{ if eq (len .Categories) 0 }}{{template "score.tex.tmpl" . }}{{end}}{{end}}
 {{end}}{{end}}
 \end{document}
 `
