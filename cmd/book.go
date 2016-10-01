@@ -25,8 +25,10 @@ var enablePointAndClick bool
 // bookCmd represents the book command
 var bookCmd = &cobra.Command{
 	Use:   "book",
-	Short: "Generate library songbook",
-	Long:  ``,
+	Short: "Generate target songbook",
+	Long: `Generates a songbook based on a target specified in the ponder
+settings. If not all songs included in the target have been compiled,
+these songs will be compiled as if the compile command had been called.`,
 	Run: func(cmd *cobra.Command, args []string) {
 		path, opts := getSettings()
 		opts.KeepBookTemplate = opts.KeepBookTemplate || keepTemplate
