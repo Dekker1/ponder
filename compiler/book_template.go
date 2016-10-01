@@ -32,19 +32,19 @@ func parseBookTemplate(opts *settings.Settings) (t *template.Template, err error
 	})
 
 	parsePartialTemplate(t.New("packages.tex.tmpl"),
-		filepath.Join(opts.BookTemplateDir, "packages.tex.tmpl"), packagesTempl)
+		filepath.Join(opts.BookTemplateDir, "packages.tex.tmpl"), DefaultPackagesTempl)
 	parsePartialTemplate(t.New("title.tex.tmpl"),
-		filepath.Join(opts.BookTemplateDir, "title.tex.tmpl"), titleTempl)
+		filepath.Join(opts.BookTemplateDir, "title.tex.tmpl"), DefaultTitleTempl)
 	parsePartialTemplate(t.New("category.tex.tmpl"),
-		filepath.Join(opts.BookTemplateDir, "category.tex.tmpl"), categoryTempl)
+		filepath.Join(opts.BookTemplateDir, "category.tex.tmpl"), DefaultCategoryTempl)
 	parsePartialTemplate(t.New("score.tex.tmpl"),
-		filepath.Join(opts.BookTemplateDir, "score.tex.tmpl"), scoreTempl)
+		filepath.Join(opts.BookTemplateDir, "score.tex.tmpl"), DefaultScoreTempl)
 
-	_, err = t.Parse(bookTempl)
+	_, err = t.Parse(BookTempl)
 	if err != nil {
 		log.WithFields(log.Fields{
 			"template": t,
-			"source":   bookTempl,
+			"source":   BookTempl,
 			"error":    err,
 		}).Fatal("songbook template failed to parse")
 	}
@@ -60,13 +60,15 @@ func parsePartialTemplate(t *template.Template, sourceFile, fallback string) {
 	}
 	if err != nil {
 		log.WithFields(log.Fields{
-			"source": packagesTempl,
+			"source": fallback,
 			"error":  err,
 		}).Fatal("packages partial template failed to parse")
 	}
 }
 
-const bookTempl = `{{ template "packages.tex.tmpl" . }}
+// BookTempl contains the template used by the book command to produce a latex
+// source file for the songbook
+const BookTempl = `{{ template "packages.tex.tmpl" . }}
 
 {{if ne .Settings.Name ""}}\title{ {{.Settings.Name}} }{{end}}
 {{if ne .Settings.Author ""}}\author{ {{.Settings.Author}} }{{end}}
@@ -87,14 +89,22 @@ const bookTempl = `{{ template "packages.tex.tmpl" . }}
 \end{document}
 `
 
-const packagesTempl = `\documentclass[11pt,fleqn]{book}
+// DefaultPackagesTempl contains the packages used if no packages template is
+// provided
+const DefaultPackagesTempl = `\documentclass[11pt,fleqn]{book}
 \usepackage[utf8]{inputenc}
 \usepackage{pdfpages}
 \usepackage[space]{grffile}
 \usepackage{hyperref}`
 
-const titleTempl = `\maketitle`
+// DefaultTitleTempl contains the template used to make a title page if no title
+// template is provided
+const DefaultTitleTempl = `\maketitle`
 
-const categoryTempl = `\chapter{{printf "{"}}{{ . }}{{printf "}"}}\newpage`
+// DefaultCategoryTempl contains the template called for every category if no
+// category template is provided
+const DefaultCategoryTempl = `\chapter{{printf "{"}}{{ . }}{{printf "}"}}\newpage`
 
-const scoreTempl = `\includepdf[addtotoc={1,section,1,{{ printf "{%s}" .Name }},}, pages=-]{{printf "{%s}" .OutputPath}}`
+// DefaultScoreTempl contains the template called for every score if no
+// category template is provided
+const DefaultScoreTempl = `\includepdf[addtotoc={1,section,1,{{ printf "{%s}" .Name }},}, pages=-]{{printf "{%s}" .OutputPath}}`
