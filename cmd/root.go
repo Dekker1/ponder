@@ -34,10 +34,10 @@ var (
 var RootCmd = &cobra.Command{
 	Use:   "ponder",
 	Short: "A managing tool for lilypond sheet music libraries",
-	Long: `Ponder is a tool to help manage your sheet music library.
-The main purpose is to help in the compilation of your lilypond files
-into both single files and a fully functioning song book. It also accepts
-other PDF files to be part of your song book.`,
+	Long: `Ponder is a tool to help manage your sheet music library. The main
+purpose is to help in the compilation of your lilypond files into both single
+files and a fully functioning song book. It also accepts other PDF files to be
+part of your song book.`,
 	PersistentPreRun: func(cmd *cobra.Command, args []string) {
 		setLogLevel()
 	},

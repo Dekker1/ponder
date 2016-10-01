@@ -23,10 +23,9 @@ import (
 var compileCmd = &cobra.Command{
 	Use:   "compile",
 	Short: "Compiles all lilypond files in the library",
-	Long: `Compile (ponder compile) will walk through and compile all
-lilypond files in accordance to ponder settings file.
-Files that have already been compiled will be skipped,
-unless the lilypond file has been edited.`,
+	Long: `Compile (ponder compile) will walk through and compile all lilypond
+files in accordance to ponder settings file. Files that have already been
+compiled will be skipped, unless the lilypond file has been edited.`,
 	Run: func(cmd *cobra.Command, args []string) {
 		path, opts := getSettings()
 		opts.EnablePointAndClick = opts.EnablePointAndClick || enablePointAndClick

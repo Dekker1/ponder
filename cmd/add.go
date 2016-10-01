@@ -26,8 +26,9 @@ import (
 var addCmd = &cobra.Command{
 	Use:   "add [file]+",
 	Short: "Add pdf file to a book",
-	Long: `Add creates a json file with all options regarding a sheet music file in PDF format.
-The information saved in the json file will be used when compiling the songbook.`,
+	Long: `Add creates a json file with all options regarding a sheet music file
+in PDF format. The information saved in the json file will be used when
+compiling the songbook.`,
 	Run: func(cmd *cobra.Command, args []string) {
 		var (
 			path string
