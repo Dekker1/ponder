@@ -32,26 +32,12 @@ func Clean(path string, opts *settings.Settings) {
 	// Remove score files
 	for i := range scores {
 		scores[i].GenerateOutputPath(opts)
-		if helpers.Exists(scores[i].OutputPath) {
-			if err := os.Remove(scores[i].OutputPath); err != nil {
-				log.WithFields(log.Fields{
-					"error": err,
-					"score": scores[i],
-				}).Error("unable to delete file")
-			}
-		}
+		helpers.CleanFile(scores[i].OutputPath)
 	}
 
 	// Remove LaTeX resources
 	texPath := filepath.Join(opts.OutputDir, opts.Name+".tex")
-	if helpers.Exists(texPath) {
-		if err := os.Remove(texPath); err != nil {
-			log.WithFields(log.Fields{
-				"error": err,
-				"file":  texPath,
-			}).Error("unable to delete file")
-		}
-	}
+	helpers.CleanFile(texPath)
 	for i := range opts.LatexResources {
 		path := filepath.Join(opts.OutputDir, filepath.Base(opts.LatexResources[i]))
 		err := os.RemoveAll(path)
@@ -65,12 +51,5 @@ func Clean(path string, opts *settings.Settings) {
 
 	// Remove target songbook
 	songbookPath := filepath.Join(opts.OutputDir, opts.Name+".pdf")
-	if helpers.Exists(songbookPath) {
-		if err := os.Remove(songbookPath); err != nil {
-			log.WithFields(log.Fields{
-				"error":    err,
-				"songbook": songbookPath,
-			}).Error("unable to delete file")
-		}
-	}
+	helpers.CleanFile(songbookPath)
 }

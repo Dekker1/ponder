@@ -99,3 +99,16 @@ func AbsolutePath(path, root string) string {
 	}
 	return filepath.Join(root, path)
 }
+
+// CleanFile removes the file on the given path if it exists. In case of
+// failure, an error will be logged.
+func CleanFile(path string) {
+	if Exists(path) {
+		if err := os.Remove(path); err != nil {
+			log.WithFields(log.Fields{
+				"error": err,
+				"file":  path,
+			}).Error("unable to delete file")
+		}
+	}
+}
