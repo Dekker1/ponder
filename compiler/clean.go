@@ -35,6 +35,17 @@ func Clean(path string, opts *settings.Settings) {
 		helpers.CleanFile(scores[i].OutputPath)
 	}
 
+	// Remove empty category directories
+	if !opts.FlatOutputDir {
+		cat := scoreCategories(&scores)
+		for i := range cat {
+			dir := filepath.Join(opts.OutputDir, cat[i])
+			if t, err := helpers.EmptyDir(dir); t && err == nil {
+				helpers.CleanFile(dir)
+			}
+		}
+	}
+
 	// Remove LaTeX resources
 	texPath := filepath.Join(opts.OutputDir, opts.Name+".tex")
 	helpers.CleanFile(texPath)
