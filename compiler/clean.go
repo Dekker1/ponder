@@ -17,6 +17,7 @@ package compiler
 import (
 	"os"
 	"path/filepath"
+	"strings"
 
 	log "github.com/Sirupsen/logrus"
 	"github.com/jjdekker/ponder/helpers"
@@ -33,6 +34,10 @@ func Clean(path string, opts *settings.Settings) {
 	for i := range scores {
 		scores[i].GenerateOutputPath(opts)
 		helpers.CleanFile(scores[i].OutputPath)
+
+		dot := strings.LastIndex(scores[i].OutputPath, ".")
+		midi := scores[i].OutputPath[:dot+1] + "midi"
+		helpers.CleanFile(midi)
 	}
 
 	// Remove empty category directories
